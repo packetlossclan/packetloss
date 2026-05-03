@@ -38,7 +38,8 @@ if pnpm run build; then
   sudo /usr/sbin/semanage fcontext -a -t httpd_sys_content_t "/var/www/$NAME(/.*)?" 2> /dev/null
   sudo /usr/sbin/restorecon -R /var/www/$NAME 2> /dev/null
   # Ensure Nginx can read static assets served directly (images, audio)
-  sudo /usr/sbin/restorecon -Rv /home/nginx/.local/share/pnpm/
+  #sudo /usr/sbin/restorecon -Rv /home/nginx/.local/share/pnpm/
+  sudo /usr/sbin/restorecon -v /home/nginx/.local/share/pnpm/pnpm
 
   sudo /usr/bin/systemctl start $SERVICE
   echo "🚀 Serviço reiniciado!"
