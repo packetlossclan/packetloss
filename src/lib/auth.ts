@@ -60,7 +60,10 @@ export async function getCurrentUser(): Promise<User | null> {
     .from(sessions)
     .innerJoin(users, eq(users.id, sessions.userId))
     .where(
-      and(eq(sessions.tokenHash, tokenHash), gt(sessions.expiresAt, new Date())),
+      and(
+        eq(sessions.tokenHash, tokenHash),
+        gt(sessions.expiresAt, new Date()),
+      ),
     )
     .limit(1);
 

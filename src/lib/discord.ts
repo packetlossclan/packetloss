@@ -74,7 +74,9 @@ export async function exchangeCodeForAccessToken(
   return tokenResponse.access_token;
 }
 
-export async function fetchDiscordUser(accessToken: string): Promise<DiscordUser> {
+export async function fetchDiscordUser(
+  accessToken: string,
+): Promise<DiscordUser> {
   const response = await fetch(`${DISCORD_API_URL}/users/@me`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,

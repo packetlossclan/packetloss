@@ -17,7 +17,9 @@ export default async function Home() {
               style={{ borderRadius: "50%" }}
             />
           )}
-          <p>Olá, <strong>{user.username}</strong>!</p>
+          <p>
+            Olá, <strong>{user.username}</strong>!
+          </p>
           <form action="/auth/logout" method="POST">
             <button type="submit">Sair</button>
           </form>
