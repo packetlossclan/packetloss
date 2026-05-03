@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "NODE_ENV=production next start -p 3030",
+    "start": "NODE_ENV=production next start -p 3050",
     "push": "drizzle-kit push",
     "seed": "tsx ./src/db/seed.ts",
     "lint": "biome check",

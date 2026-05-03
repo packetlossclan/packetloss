@@ -1,34 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Aplicativo Next.js com login/cadastro via Discord e persistência com Drizzle ORM (SQLite/libSQL).
 
-## Getting Started
+## Arquitetura
 
-First, run the development server:
+- **Framework**: Next.js 16 (App Router)
+- **Banco de dados**: SQLite via libSQL + Drizzle ORM
+- **Autenticação**: Discord OAuth2 (sem bibliotecas externas de auth)
+- **Sessões**: cookie `session_token` com hash SHA-256 armazenado no banco
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Fluxo de autenticação
+
+```
+Usuário → GET /auth/discord → Discord OAuth → GET /auth/discord/callback
+→ upsert do usuário no banco → cria sessão → redireciona para /
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Rotas de autenticação
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Rota | Método | Descrição |
+|---|---|---|
+| `/auth/discord` | GET | Inicia o fluxo OAuth2 com o Discord |
+| `/auth/discord/callback` | GET | Recebe o código do Discord, cria/atualiza usuário e cria sessão |
+| `/auth/logout` | POST | Encerra a sessão e redireciona para `/` |
 
-## Learn More
+### Estrutura relevante
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/
+    auth/
+      discord/
+        route.ts          # inicia OAuth
+        callback/
+          route.ts        # finaliza OAuth
+      logout/
+        route.ts          # encerra sessão
+    page.tsx              # home: exibe usuário logado ou botão de login
+  db/
+    index.ts              # instância do Drizzle
+    schema.ts             # tabelas: users, sessions
+  lib/
+    auth.ts               # createSession, getCurrentUser, clearSession
+    discord.ts            # helpers da API do Discord
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Configuração
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Crie um app OAuth2 no [Discord Developer Portal](https://discord.com/developers/applications).
+2. Em **OAuth2 → Redirects**, adicione: `http://localhost:3000/auth/discord/callback`.
+3. Crie o arquivo `.env`:
 
-## Deploy on Vercel
+```bash
+cp .env.example .env
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. Preencha as variáveis:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Variável | Descrição |
+|---|---|
+| `DB_FILE_NAME` | Caminho do banco SQLite (ex.: `file:./packetloss.db`) |
+| `DISCORD_CLIENT_ID` | Client ID do app no Discord |
+| `DISCORD_CLIENT_SECRET` | Client Secret do app no Discord |
+| `DISCORD_REDIRECT_URI` | *(Opcional)* Sobrescreve a URL de callback auto-detectada |
+
+5. Aplique o schema no banco:
+
+```bash
+pnpm push
+```
+
+## Rodando
+
+```bash
+pnpm dev
+```
+
+Abra `http://localhost:3000` e clique em "Entrar com Discord".
+
