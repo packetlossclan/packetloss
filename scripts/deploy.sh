@@ -40,7 +40,7 @@ if pnpm run build; then
   # Ensure Nginx can read static assets served directly (images, audio)
   #sudo /usr/sbin/restorecon -Rv /home/nginx/.local/share/pnpm/
   #sudo /usr/sbin/restorecon -v /home/nginx/.local/share/pnpm/pnpm
-  sudo /usr/sbin/chcon -t bin_t /home/nginx/.local/share/pnpm/pnpm
+  sudo /usr/bin/chcon -t bin_t /home/nginx/.local/share/pnpm/pnpm
 
   sudo /usr/bin/systemctl start $SERVICE
   echo "🚀 Serviço reiniciado!"
