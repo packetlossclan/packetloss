@@ -6,8 +6,20 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 
 export const metadata: Metadata = {
-  title: "Packetloss",
+  title: "PacketLoss",
   description: "Login/cadastro com Discord usando Drizzle ORM",
+  openGraph: {
+    title: "PacketLoss",
+    description: "Login/cadastro com Discord usando Drizzle ORM",
+      images: [
+        {
+          url: "https://packetloss.com.br/og-image.png",
+          width: 256,
+          height: 256,
+          alt: "PacketLoss - Login/cadastro com Discord usando Drizzle ORM",
+        },
+      ],
+  }
 };
 
 export default function RootLayout({
@@ -17,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${geist.variable} ${geistMono.variable}`}>
-      <body className="bg-neutral-950 text-neutral-100 font-[family-name:var(--font-geist)] antialiased">
+      <body className="bg-neutral-950 text-neutral-100 font-(family-name:--font-geist) antialiased">
         {children}
       </body>
     </html>
