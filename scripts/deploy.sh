@@ -13,14 +13,15 @@ echo "📦 Preparando ambiente de deploy..."
 cd $TMPDIR || exit 1
 
 #git clean -fxd -e .env -e local.db
-git clean -fxd
+git clean -fxd -e .env
+#git clean -fxd
 #cp .env .env.production
 
 echo "📥 Instalando dependências..."
 pnpm install
 
-# echo "🗃️ Sincronizando banco de dados..."
-# pnpm run push
+echo "🗃️ Sincronizando banco de dados..."
+pnpm run push
 
 if [ $? -ne 0 ]; then
   echo "⚠️ Falha ao sincronizar banco de dados. Abortando o deploy..."
