@@ -35,11 +35,11 @@ if pnpm run build; then
   [ -e $TMPDIR ] && cp -af $TMPDIR $WORKDIR
 
   echo "✅ Configurando contexto SELinux para /var/www/$NAME..."
-  sudo /usr/sbin/semanage fcontext -a -t httpd_sys_content_t "/var/www/$NAME(/.*)?" 2> /dev/null
+  # httpd_sys_script_exec_t allows Node.js files to be executed by the service
+  sudo /usr/sbin/semanage fcontext -a -t httpd_sys_script_exec_t "/var/www/$NAME(/.*)?" 2> /dev/null
   sudo /usr/sbin/restorecon -R /var/www/$NAME 2> /dev/null
-  # Ensure Nginx can read static assets served directly (images, audio)
-  #sudo /usr/sbin/restorecon -Rv /home/nginx/.local/share/pnpm/
-  #sudo /usr/sbin/restorecon -v /home/nginx/.local/share/pnpm/pnpm
+  # Allow Nginx to proxy to local ports (e.g. 3050)
+  sudo /usr/sbin/setsebool -P httpd_can_network_connect 1
   sudo /usr/bin/chcon -t bin_t /home/nginx/.local/share/pnpm/pnpm
 
   sudo /usr/bin/systemctl start $SERVICE
