@@ -46,3 +46,6 @@ pkl/
 
 # drizzle
 *.db
+
+# other
+.claude/
