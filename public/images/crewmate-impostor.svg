@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 300" width="220" height="300" aria-label="Crewmate impostor (red)">
+  <defs>
+    <linearGradient id="ibShade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.14)"></stop>
+      <stop offset="55%" stop-color="rgba(255,255,255,0)"></stop>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.26)"></stop>
+    </linearGradient>
+    <linearGradient id="ibSide" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(0,0,0,0.2)"></stop>
+      <stop offset="18%" stop-color="rgba(0,0,0,0)"></stop>
+      <stop offset="82%" stop-color="rgba(0,0,0,0)"></stop>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.24)"></stop>
+    </linearGradient>
+    <radialGradient id="ivisG" cx="32%" cy="30%" r="78%">
+      <stop offset="0%" stop-color="#dff0f7"></stop>
+      <stop offset="55%" stop-color="#86b9cf"></stop>
+      <stop offset="100%" stop-color="#3a6c84"></stop>
+    </radialGradient>
+    <radialGradient id="igrnd" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(0,0,0,0.5)"></stop>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"></stop>
+    </radialGradient>
+    <radialGradient id="ired" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(255,46,77,0.7)"></stop>
+      <stop offset="100%" stop-color="rgba(255,46,77,0)"></stop>
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="110" cy="284" rx="62" ry="7" fill="url(#igrnd)"></ellipse>
+
+  <path d="M170 100 Q188 100 188 118 L188 156 Q188 172 170 172 Z" fill="#c1424a"></path>
+  <path d="M170 100 Q188 100 188 118 L188 156 Q188 172 170 172 Z" fill="url(#ibShade)"></path>
+  <path d="M170 100 L170 172" stroke="rgba(0,0,0,0.26)" stroke-width="1.5"></path>
+
+  <rect x="62" y="232" width="36" height="44" rx="14" fill="#c1424a"></rect>
+  <rect x="122" y="232" width="36" height="44" rx="14" fill="#c1424a"></rect>
+  <rect x="62" y="232" width="36" height="44" rx="14" fill="url(#ibShade)"></rect>
+  <rect x="122" y="232" width="36" height="44" rx="14" fill="url(#ibShade)"></rect>
+
+  <path d="M40 110 Q40 38 110 38 Q180 38 180 110 L180 220 Q180 244 156 244 L64 244 Q40 244 40 220 Z" fill="#c1424a"></path>
+  <path d="M40 110 Q40 38 110 38 Q180 38 180 110 L180 220 Q180 244 156 244 L64 244 Q40 244 40 220 Z" fill="url(#ibShade)"></path>
+  <path d="M40 110 Q40 38 110 38 Q180 38 180 110 L180 220 Q180 244 156 244 L64 244 Q40 244 40 220 Z" fill="url(#ibSide)"></path>
+
+  <path d="M64 96 Q64 70 100 70 L156 70 Q176 70 176 90 L176 132 Q176 152 156 152 L100 152 Q64 152 64 126 Z" fill="#142028"></path>
+  <path d="M72 98 Q72 78 102 78 L154 78 Q168 78 168 92 L168 130 Q168 144 154 144 L102 144 Q72 144 72 124 Z" fill="url(#ivisG)"></path>
+
+  <ellipse cx="118" cy="112" rx="32" ry="14" fill="url(#ired)">
+    
+  </ellipse>
+  <circle cx="118" cy="112" r="5.5" fill="#ff2e4d">
+    
+  </circle>
+  <circle cx="118" cy="112" r="2" fill="#fff5f6"></circle>
+
+  <ellipse cx="96" cy="94" rx="20" ry="9" fill="#ffffff" opacity="0.85"></ellipse>
+  <ellipse cx="138" cy="128" rx="6" ry="2.5" fill="#ffffff" opacity="0.45"></ellipse>
+</svg>

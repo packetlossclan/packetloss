@@ -1,25 +1,49 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
-const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
+const nunito = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Nunito-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Nunito-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-nunito",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "PacketLoss",
-  description: "Login/cadastro com Discord usando Drizzle ORM",
+  title: "Packet Loss — Clã de Elite Among Us",
+  description:
+    "Clã de elite Among Us. Fundado em 14 de agosto de 2023. Região BR-SUL. Ranking global #03.",
   openGraph: {
-    title: "PacketLoss",
-    description: "Login/cadastro com Discord usando Drizzle ORM",
-      images: [
-        {
-          url: "https://packetloss.com.br/og-image.png",
-          width: 256,
-          height: 256,
-          alt: "PacketLoss - Login/cadastro com Discord usando Drizzle ORM",
-        },
-      ],
-  }
+    title: "Packet Loss — Clã de Elite Among Us",
+    description:
+      "Clã de elite Among Us. Fundado em 14 de agosto de 2023. Região BR-SUL. Ranking global #03.",
+    images: [
+      {
+        url: "https://packetloss.com.br/og-image.png",
+        width: 256,
+        height: 256,
+        alt: "Packet Loss — Clã de Elite Among Us",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -28,8 +52,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${geist.variable} ${geistMono.variable}`}>
-      <body className="bg-neutral-950 text-neutral-100 font-(family-name:--font-geist) antialiased">
+    <html
+      lang="pt-BR"
+      className={`${nunito.variable} ${jetbrainsMono.variable}`}
+    >
+      <body style={{ fontFamily: "var(--font-nunito, var(--font-display))" }}>
         {children}
       </body>
     </html>
