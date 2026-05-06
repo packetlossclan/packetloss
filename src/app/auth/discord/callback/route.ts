@@ -10,13 +10,16 @@ import {
   getDiscordStateCookieName,
 } from "@/lib/discord";
 
-function getRedirectUri(request: NextRequest): string {
+function getOrigin(request: NextRequest): string {
   if (process.env.DISCORD_REDIRECT_URI) {
-    return process.env.DISCORD_REDIRECT_URI;
+    return new URL(process.env.DISCORD_REDIRECT_URI).origin;
   }
 
-  const url = new URL(request.url);
-  return `${url.origin}/auth/discord/callback`;
+  return new URL(request.url).origin;
+}
+
+function getRedirectUri(request: NextRequest): string {
+  return `${getOrigin(request)}/auth/discord/callback`;
 }
 
 export async function GET(request: NextRequest): Promise<Response> {
@@ -25,7 +28,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   const state = searchParams.get("state");
   const error = searchParams.get("error");
 
-  const homeUrl = new URL("/", request.url).toString();
+  const homeUrl = `${getOrigin(request)}/`;
 
   if (error || !code || !state) {
     return Response.redirect(homeUrl);
