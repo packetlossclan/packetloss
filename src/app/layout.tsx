@@ -30,11 +30,11 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Packet Loss — Clã de Elite Among Us",
   description:
-    "Clã de elite Among Us. Fundado em 14 de agosto de 2023. Região BR-SUL. Ranking global #03.",
+    "Clã de elite Among Us. Fundado em 21 de agosto de 2021.",
   openGraph: {
     title: "Packet Loss — Clã de Elite Among Us",
     description:
-      "Clã de elite Among Us. Fundado em 14 de agosto de 2023. Região BR-SUL. Ranking global #03.",
+      "Clã de elite Among Us. Fundado em 21 de agosto de 2021.",
     images: [
       {
         url: "https://packetloss.com.br/og-image.png",

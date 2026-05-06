@@ -69,7 +69,7 @@ interface HeroProps {
 export function HeroCommand({ accent, impostorMode }: HeroProps) {
   const ac = accent ?? "var(--signal-500)";
   const sub = useTyping(
-    "Um clã de elite de Among Us, fundado em 2023. Estratégia, leitura de microexpressão e um histórico de impostores que ninguém conseguiu acusar a tempo.",
+    "Um clã de elite de Among Us, fundado em 2021. Estratégia e um histórico de impostores que ninguém conseguiu acusar.",
   );
 
   return (

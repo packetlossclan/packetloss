@@ -210,15 +210,13 @@ export function SiteFooter({ accentColor }: SiteFooterProps) {
               lineHeight: 1.6,
             }}
           >
-            Clã de elite Among Us. Fundado em 14 de agosto de 2023.
-            <br />
-            Região BR-SUL. Ranking global #03.
+            Clã de elite Among Us. Fundado em 21 de agosto de 2021.
           </p>
           <div style={{ marginTop: 24, display: "flex", gap: 12 }}>
-            {["Discord", "Twitch", "Twitter"].map((s) => (
+            {["Discord", "WhatsApp"].map((s) => (
               <a
                 key={s}
-                href={`https://discord.gg`}
+                href={`https://packetloss.com.br/${s.toLowerCase()}`}
                 rel="noopener noreferrer"
                 target="_blank"
                 style={{
