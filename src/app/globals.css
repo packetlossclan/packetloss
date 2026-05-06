@@ -489,6 +489,26 @@ pre {
     transform: translateX(-1px);
   }
 }
+/* Periodic glitch: 4.38s cycle, glitches for ~180ms every ~4.2s */
+@keyframes glitch-periodic {
+  0%,
+  95.8% {
+    transform: translateX(0);
+  }
+  96.2% {
+    transform: translateX(-2px);
+  }
+  96.8% {
+    transform: translateX(2px);
+  }
+  97.3% {
+    transform: translateX(-1px);
+  }
+  97.8%,
+  100% {
+    transform: translateX(0);
+  }
+}
 @keyframes blink {
   0%,
   90%,

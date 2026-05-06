@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Crewmate } from "@/components/Crewmate";
 
 interface FloatingTagProps {
@@ -43,22 +43,28 @@ export function FloatingTag({
   );
 }
 
-export function useTyping(text: string, speed = 45, startDelay = 600) {
-  const [displayed, setDisplayed] = useState("");
+export function useTyping(
+  text: string,
+  speed = 45,
+  startDelay = 600,
+): React.RefObject<HTMLSpanElement | null> {
+  const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
-    setDisplayed("");
+    const el = ref.current;
+    if (!el) return;
+    el.textContent = "";
     let i = 0;
     const t0 = setTimeout(() => {
       const iv = setInterval(() => {
         i++;
-        setDisplayed(text.slice(0, i));
+        el.textContent = text.slice(0, i);
         if (i >= text.length) clearInterval(iv);
       }, speed);
       return () => clearInterval(iv);
     }, startDelay);
     return () => clearTimeout(t0);
   }, [text, speed, startDelay]);
-  return displayed;
+  return ref;
 }
 
 interface HeroProps {
@@ -68,7 +74,7 @@ interface HeroProps {
 
 export function HeroCommand({ accent, impostorMode }: HeroProps) {
   const ac = accent ?? "var(--signal-500)";
-  const sub = useTyping(
+  const subRef = useTyping(
     "Um clã de elite de Among Us, fundado em 2021. Estratégia e um histórico de impostores que ninguém conseguiu acusar.",
   );
 
@@ -157,7 +163,7 @@ export function HeroCommand({ accent, impostorMode }: HeroProps) {
               minHeight: 60,
             }}
           >
-            {sub}
+            <span ref={subRef} />
             <span
               style={{
                 animation: "blink 0.8s infinite",
@@ -349,15 +355,6 @@ export function HeroCommand({ accent, impostorMode }: HeroProps) {
 
 export function HeroBroadcast({ accent, impostorMode }: HeroProps) {
   const ac = accent ?? "var(--signal-500)";
-  const [glitch, setGlitch] = useState(false);
-
-  useEffect(() => {
-    const iv = setInterval(() => {
-      setGlitch(true);
-      setTimeout(() => setGlitch(false), 180);
-    }, 4200);
-    return () => clearInterval(iv);
-  }, []);
 
   const corners = [
     { top: 24, left: 24 },
@@ -462,7 +459,7 @@ export function HeroBroadcast({ accent, impostorMode }: HeroProps) {
             letterSpacing: "-0.04em",
             lineHeight: 0.88,
             color: "var(--hull-100)",
-            animation: glitch ? "glitch-x 0.18s steps(2,end)" : "none",
+            animation: "glitch-periodic 4.38s steps(2,end) infinite",
           }}
         >
           PACKET
@@ -585,7 +582,7 @@ export function HeroBroadcast({ accent, impostorMode }: HeroProps) {
 
 export function HeroMap({ accent, impostorMode }: HeroProps) {
   const ac = accent ?? "var(--signal-500)";
-  const sub = useTyping(
+  const subRef = useTyping(
     "Estratégia, leitura de microexpressão. Histórico de impostores que ninguém acusou a tempo.",
     38,
     400,
@@ -857,7 +854,7 @@ export function HeroMap({ accent, impostorMode }: HeroProps) {
             maxWidth: "40ch",
           }}
         >
-          {">"} {sub}
+          {">"}  <span ref={subRef} />
           <span
             style={{
               display: "inline-block",
