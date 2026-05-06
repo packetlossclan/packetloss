@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 import { buildDiscordAvatarUrl, createSession } from "@/lib/auth";
@@ -64,12 +64,15 @@ export async function GET(request: NextRequest): Promise<Response> {
 
     userId = existing.id;
   } else {
+    const [{ total }] = await db.select({ total: count() }).from(users);
+
     const [inserted] = await db
       .insert(users)
       .values({
         discordId: discordUser.id,
         username: discordUser.username,
         avatarUrl,
+        role: total === 0 ? "super_admin" : "user",
       })
       .returning({ id: users.id });
 

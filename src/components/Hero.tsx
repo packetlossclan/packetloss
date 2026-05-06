@@ -854,7 +854,7 @@ export function HeroMap({ accent, impostorMode }: HeroProps) {
             maxWidth: "40ch",
           }}
         >
-          {">"}  <span ref={subRef} />
+          {">"} <span ref={subRef} />
           <span
             style={{
               display: "inline-block",

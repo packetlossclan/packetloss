@@ -88,6 +88,24 @@ export default async function Home() {
               Sair
             </button>
           </form>
+          {(user.role === "admin" || user.role === "super_admin") && (
+            <a
+              href="/admin"
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                letterSpacing: ".12em",
+                textTransform: "uppercase",
+                color: "var(--signal-500)",
+                textDecoration: "none",
+                padding: "4px 8px",
+                border: "1px solid var(--signal-700)",
+                borderRadius: "var(--r-sm)",
+              }}
+            >
+              Admin
+            </a>
+          )}
         </div>
       )}
     </>

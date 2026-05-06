@@ -1,0 +1,55 @@
+import { and, eq, isNull, lte, or, gt } from "drizzle-orm";
+import type { NextRequest } from "next/server";
+import { db } from "@/db";
+import { ads } from "@/db/schema";
+
+function authenticate(request: NextRequest): boolean {
+  const apiKey = process.env.PACKETADS_API_KEY;
+  if (!apiKey) return false;
+
+  const authHeader = request.headers.get("authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    return authHeader.slice(7) === apiKey;
+  }
+  const xKey = request.headers.get("x-api-key");
+  return xKey === apiKey;
+}
+
+/**
+ * GET /api/packetads
+ *
+ * Returns all active ads that are within their validity window.
+ * The bot is responsible for respecting `intervalHours` and `lastPostedAt`
+ * to decide whether to post each message.
+ *
+ * Authentication: Bearer <PACKETADS_API_KEY> or X-Api-Key header.
+ */
+export async function GET(request: NextRequest): Promise<Response> {
+  if (!authenticate(request)) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const now = new Date();
+
+  const activeAds = await db
+    .select()
+    .from(ads)
+    .where(
+      and(
+        eq(ads.enabled, true),
+        or(isNull(ads.startsAt), lte(ads.startsAt, now)),
+        or(isNull(ads.expiresAt), gt(ads.expiresAt, now)),
+      ),
+    );
+
+  return Response.json(
+    activeAds.map((ad) => ({
+      id: ad.id,
+      title: ad.title,
+      message: ad.message,
+      intervalHours: ad.intervalHours,
+      lastPostedAt: ad.lastPostedAt ? ad.lastPostedAt.toISOString() : null,
+      expiresAt: ad.expiresAt ? ad.expiresAt.toISOString() : null,
+    })),
+  );
+}
