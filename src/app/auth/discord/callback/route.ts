@@ -47,6 +47,9 @@ export async function GET(request: NextRequest): Promise<Response> {
   const discordUser = await fetchDiscordUser(accessToken);
 
   const avatarUrl = buildDiscordAvatarUrl(discordUser.id, discordUser.avatar);
+  const email = discordUser.email ?? null;
+  const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
+  const isSuperAdminEmail = !!superAdminEmail && email === superAdminEmail;
 
   const [existing] = await db
     .select()
@@ -59,12 +62,20 @@ export async function GET(request: NextRequest): Promise<Response> {
   if (existing) {
     await db
       .update(users)
-      .set({ username: discordUser.username, avatarUrl, updatedAt: new Date() })
+      .set({
+        username: discordUser.username,
+        avatarUrl,
+        email,
+        ...(isSuperAdminEmail ? { role: "super_admin" as const } : {}),
+        updatedAt: new Date(),
+      })
       .where(eq(users.id, existing.id));
 
     userId = existing.id;
   } else {
     const [{ total }] = await db.select({ total: count() }).from(users);
+
+    const role = isSuperAdminEmail || total === 0 ? "super_admin" : "user";
 
     const [inserted] = await db
       .insert(users)
@@ -72,7 +83,8 @@ export async function GET(request: NextRequest): Promise<Response> {
         discordId: discordUser.id,
         username: discordUser.username,
         avatarUrl,
-        role: total === 0 ? "super_admin" : "user",
+        email,
+        role,
       })
       .returning({ id: users.id });
 

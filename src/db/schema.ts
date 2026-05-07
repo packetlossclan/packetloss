@@ -6,6 +6,7 @@ export const users = sqliteTable("users", {
   discordId: text("discord_id").notNull().unique(),
   username: text("username").notNull(),
   avatarUrl: text("avatar_url"),
+  email: text("email"),
   role: text("role", { enum: ["user", "admin", "super_admin"] })
     .notNull()
     .default("user"),

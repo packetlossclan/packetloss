@@ -3,13 +3,6 @@ import { getCurrentUser } from "@/lib/auth";
 import { Starfield } from "@/components/Starfield";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { HeroCommand } from "@/components/Hero";
-import {
-  StatsBar,
-  HomeFeatures,
-  HomeEvents,
-  HallDaFama,
-  HomeJoinCTA,
-} from "@/components/Sections";
 
 export default async function Home() {
   const user = await getCurrentUser();
@@ -21,16 +14,10 @@ export default async function Home() {
 
       <main id="home" style={{ position: "relative", zIndex: 1 }}>
         <HeroCommand />
-        <StatsBar />
-        <HomeFeatures />
-        <HomeEvents />
-        <HallDaFama />
-        <HomeJoinCTA />
       </main>
 
       <SiteFooter />
 
-      {/* Auth widget — visible only when logged in */}
       {user && (
         <div
           style={{

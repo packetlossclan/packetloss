@@ -186,7 +186,7 @@ export function HeroCommand({ accent, impostorMode }: HeroProps) {
             }}
           >
             <a
-              href="#alistar"
+              href="/auth/discord"
               className="btn btn--primary"
               style={{
                 background: impostorMode ? "var(--impostor-500)" : ac,
@@ -196,10 +196,15 @@ export function HeroCommand({ accent, impostorMode }: HeroProps) {
                 color: "var(--void-000)",
               }}
             >
-              {impostorMode ? "Você está rodeado →" : "Iniciar Alistamento →"}
+              {impostorMode ? "Você está rodeado →" : "Entrar com Discord →"}
             </a>
-            <a href="#sobre" className="btn btn--ghost">
-              Conhecer o Clã
+            <a
+              href="https://packetloss.com.br/discord"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn--ghost"
+            >
+              Entrar no Servidor
             </a>
           </div>
 

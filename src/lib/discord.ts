@@ -1,5 +1,5 @@
 const DISCORD_API_URL = "https://discord.com/api";
-const DISCORD_SCOPE = "identify";
+const DISCORD_SCOPE = "identify email";
 const DISCORD_STATE_COOKIE = "discord_oauth_state";
 
 type DiscordTokenResponse = {
@@ -10,6 +10,7 @@ type DiscordUser = {
   id: string;
   username: string;
   avatar: string | null;
+  email: string | null;
 };
 
 function getRequiredEnv(name: string): string {
