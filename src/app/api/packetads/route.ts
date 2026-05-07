@@ -47,8 +47,18 @@ export async function GET(request: NextRequest): Promise<Response> {
       id: ad.id,
       title: ad.title,
       message: ad.message,
-      intervalHours: ad.intervalHours,
+      scheduleType: ad.scheduleType,
+      scheduleInterval: ad.scheduleInterval,
+      scheduleTime: ad.scheduleTime,
+      scheduleDates: (() => {
+        try {
+          return ad.scheduleDates ? JSON.parse(ad.scheduleDates) : null;
+        } catch {
+          return null;
+        }
+      })(),
       lastPostedAt: ad.lastPostedAt ? ad.lastPostedAt.toISOString() : null,
+      startsAt: ad.startsAt ? ad.startsAt.toISOString() : null,
       expiresAt: ad.expiresAt ? ad.expiresAt.toISOString() : null,
     })),
   );

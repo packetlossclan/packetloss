@@ -41,6 +41,47 @@ export async function updateUserRole(
 
 // ─── Ads CRUD ─────────────────────────────────────────────────────────────────
 
+type ScheduleType =
+  | "minutes"
+  | "hours"
+  | "days"
+  | "once"
+  | "daily_time"
+  | "specific_dates";
+
+const INTERVAL_TYPES: ScheduleType[] = ["minutes", "hours", "days"];
+
+function parseScheduleFields(formData: FormData) {
+  const scheduleType = (formData.get("scheduleType") ?? "hours") as ScheduleType;
+  const scheduleIntervalRaw = formData.get("scheduleInterval");
+  const scheduleInterval = scheduleIntervalRaw ? Number(scheduleIntervalRaw) : null;
+  const scheduleTimeRaw = formData.get("scheduleTime");
+  const scheduleTime = scheduleTimeRaw ? String(scheduleTimeRaw).trim() : null;
+  const scheduleDatesRaw = formData.get("scheduleDates");
+  const scheduleDates = scheduleDatesRaw ? String(scheduleDatesRaw) : null;
+
+  if (INTERVAL_TYPES.includes(scheduleType)) {
+    if (!scheduleInterval || scheduleInterval < 1)
+      throw new Error("Intervalo deve ser pelo menos 1");
+  }
+  if (scheduleType === "once" && !scheduleTime)
+    throw new Error("Data e hora são obrigatórias para agendamento único");
+  if (scheduleType === "daily_time" && !scheduleTime)
+    throw new Error("Horário é obrigatório para agendamento diário");
+  if (scheduleType === "specific_dates") {
+    try {
+      const parsed = JSON.parse(scheduleDates ?? "[]");
+      if (!Array.isArray(parsed) || parsed.length === 0)
+        throw new Error("Adicione pelo menos uma data");
+    } catch (e) {
+      if (e instanceof Error && e.message.includes("Adicione")) throw e;
+      throw new Error("Datas inválidas");
+    }
+  }
+
+  return { scheduleType, scheduleInterval, scheduleTime, scheduleDates };
+}
+
 export async function createAd(formData: FormData) {
   await requireAdmin();
 
@@ -48,17 +89,21 @@ export async function createAd(formData: FormData) {
 
   const title = String(formData.get("title") ?? "").trim();
   const message = String(formData.get("message") ?? "").trim();
-  const intervalHours = Number(formData.get("intervalHours") ?? 24);
   const startsAtRaw = formData.get("startsAt");
   const expiresAtRaw = formData.get("expiresAt");
 
-  if (!title || !message) throw new Error("Title and message are required");
-  if (intervalHours < 1) throw new Error("Interval must be at least 1 hour");
+  if (!title || !message) throw new Error("Título e mensagem são obrigatórios");
+
+  const { scheduleType, scheduleInterval, scheduleTime, scheduleDates } =
+    parseScheduleFields(formData);
 
   await db.insert(ads).values({
     title,
     message,
-    intervalHours,
+    scheduleType,
+    scheduleInterval,
+    scheduleTime,
+    scheduleDates,
     startsAt: startsAtRaw ? new Date(String(startsAtRaw)) : null,
     expiresAt: expiresAtRaw ? new Date(String(expiresAtRaw)) : null,
     createdBy: actor?.id ?? null,
@@ -72,19 +117,23 @@ export async function updateAd(id: number, formData: FormData) {
 
   const title = String(formData.get("title") ?? "").trim();
   const message = String(formData.get("message") ?? "").trim();
-  const intervalHours = Number(formData.get("intervalHours") ?? 24);
   const startsAtRaw = formData.get("startsAt");
   const expiresAtRaw = formData.get("expiresAt");
 
-  if (!title || !message) throw new Error("Title and message are required");
-  if (intervalHours < 1) throw new Error("Interval must be at least 1 hour");
+  if (!title || !message) throw new Error("Título e mensagem são obrigatórios");
+
+  const { scheduleType, scheduleInterval, scheduleTime, scheduleDates } =
+    parseScheduleFields(formData);
 
   await db
     .update(ads)
     .set({
       title,
       message,
-      intervalHours,
+      scheduleType,
+      scheduleInterval,
+      scheduleTime,
+      scheduleDates,
       startsAt: startsAtRaw ? new Date(String(startsAtRaw)) : null,
       expiresAt: expiresAtRaw ? new Date(String(expiresAtRaw)) : null,
       updatedAt: new Date(),

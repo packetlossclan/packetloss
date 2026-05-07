@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { asc } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/db";
-import { ads, users } from "@/db/schema";
+import { ads, users, type Ad } from "@/db/schema";
 import {
   createAd,
   updateUserRole,
@@ -10,6 +10,7 @@ import {
   toggleAd,
   updateAd,
 } from "./actions";
+import { ScheduleFields } from "./ScheduleFields";
 
 function fmt(d: Date | null | undefined) {
   if (!d) return "—";
@@ -25,6 +26,33 @@ function fmt(d: Date | null | undefined) {
 function toInputDatetime(d: Date | null | undefined) {
   if (!d) return "";
   return new Date(d).toISOString().slice(0, 16);
+}
+
+const SCHEDULE_LABELS: Record<string, string> = {
+  minutes: "min",
+  hours: "h",
+  days: "d",
+  once: "Uma vez",
+  daily_time: "Diário",
+  specific_dates: "Datas",
+};
+
+function fmtSchedule(ad: Ad): string {
+  const t = ad.scheduleType;
+  if (t === "minutes" || t === "hours" || t === "days") {
+    return `${ad.scheduleInterval ?? "?"}${SCHEDULE_LABELS[t]}`;
+  }
+  if (t === "once") return `Uma vez: ${ad.scheduleTime ?? "—"}`;
+  if (t === "daily_time") return `Diário ${ad.scheduleTime ?? "—"}`;
+  if (t === "specific_dates") {
+    try {
+      const arr: string[] = JSON.parse(ad.scheduleDates ?? "[]");
+      return `${arr.length} data${arr.length !== 1 ? "s" : ""}`;
+    } catch {
+      return "Datas específicas";
+    }
+  }
+  return "—";
 }
 
 const ROLE_LABELS: Record<string, string> = {
@@ -374,28 +402,15 @@ export default async function AdminPage() {
                 </label>
                 <textarea id="message" name="message" required style={textareaStyle} />
               </div>
+              <ScheduleFields />
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr",
+                  gridTemplateColumns: "1fr 1fr",
                   gap: 12,
                   marginBottom: 16,
                 }}
               >
-                <div style={fieldStyle}>
-                  <label style={labelStyle} htmlFor="intervalHours">
-                    Periodicidade (horas)
-                  </label>
-                  <input
-                    id="intervalHours"
-                    name="intervalHours"
-                    type="number"
-                    min={1}
-                    defaultValue={24}
-                    required
-                    style={inputStyle}
-                  />
-                </div>
                 <div style={fieldStyle}>
                   <label style={labelStyle} htmlFor="startsAt">
                     Válido a partir de (opcional)
@@ -551,28 +566,20 @@ export default async function AdminPage() {
                                 style={textareaStyle}
                               />
                             </div>
+                            <ScheduleFields
+                              defaultType={ad.scheduleType as import("./ScheduleFields").ScheduleType}
+                              defaultInterval={ad.scheduleInterval}
+                              defaultTime={ad.scheduleTime}
+                              defaultDates={ad.scheduleDates}
+                            />
                             <div
                               style={{
                                 display: "grid",
-                                gridTemplateColumns: "1fr 1fr 1fr",
+                                gridTemplateColumns: "1fr 1fr",
                                 gap: 12,
                                 marginBottom: 12,
                               }}
                             >
-                              <div>
-                                <label htmlFor={`i-${ad.id}`} style={labelStyle}>
-                                  Periodicidade (horas)
-                                </label>
-                                <input
-                                  id={`i-${ad.id}`}
-                                  name="intervalHours"
-                                  type="number"
-                                  min={1}
-                                  defaultValue={ad.intervalHours}
-                                  required
-                                  style={inputStyle}
-                                />
-                              </div>
                               <div>
                                 <label htmlFor={`s-${ad.id}`} style={labelStyle}>
                                   Inicia
@@ -605,7 +612,7 @@ export default async function AdminPage() {
                         </details>
                       </td>
                       <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
-                        {ad.intervalHours}h
+                        {fmtSchedule(ad)}
                       </td>
                       <td style={{ ...tdStyle, fontSize: 12, color: "var(--hull-300)" }}>
                         {fmt(ad.startsAt)}

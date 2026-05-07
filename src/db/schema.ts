@@ -33,7 +33,14 @@ export const ads = sqliteTable("ads", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("title").notNull(),
   message: text("message").notNull(),
-  intervalHours: integer("interval_hours").notNull().default(24),
+  /** "minutes" | "hours" | "days" | "once" | "daily_time" | "specific_dates" */
+  scheduleType: text("schedule_type").notNull().default("hours"),
+  /** Interval value for minutes/hours/days types */
+  scheduleInterval: integer("schedule_interval"),
+  /** HH:MM for daily_time; "YYYY-MM-DDTHH:MM" for once */
+  scheduleTime: text("schedule_time"),
+  /** JSON array of "YYYY-MM-DDTHH:MM" strings for specific_dates */
+  scheduleDates: text("schedule_dates"),
   startsAt: integer("starts_at", { mode: "timestamp_ms" }),
   expiresAt: integer("expires_at", { mode: "timestamp_ms" }),
   enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),
