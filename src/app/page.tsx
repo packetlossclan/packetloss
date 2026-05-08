@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { getCurrentUser } from "@/lib/auth";
 import { Starfield } from "@/components/Starfield";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
@@ -10,91 +9,13 @@ export default async function Home() {
   return (
     <>
       <Starfield intensity={1} />
-      <SiteHeader />
+      <SiteHeader user={user} />
 
       <main id="home" style={{ position: "relative", zIndex: 1 }}>
-        <HeroCommand />
+        <HeroCommand user={user} />
       </main>
 
       <SiteFooter />
-
-      {user && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: 24,
-            right: 24,
-            zIndex: 200,
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            padding: "10px 16px",
-            background: "rgba(15,18,32,0.92)",
-            border: "1px solid var(--void-300)",
-            borderRadius: "var(--r-lg)",
-            backdropFilter: "blur(16px)",
-            boxShadow: "var(--shadow-deep)",
-          }}
-        >
-          {user.avatarUrl && (
-            <Image
-              src={user.avatarUrl}
-              alt={user.username}
-              width={28}
-              height={28}
-              style={{ borderRadius: "50%" }}
-            />
-          )}
-          <span
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              color: "var(--hull-200)",
-              letterSpacing: ".08em",
-            }}
-          >
-            {user.username}
-          </span>
-          <form action="/auth/logout" method="POST">
-            <button
-              type="submit"
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                letterSpacing: ".12em",
-                textTransform: "uppercase",
-                color: "var(--hull-400)",
-                cursor: "pointer",
-                padding: "4px 8px",
-                border: "1px solid var(--void-400)",
-                borderRadius: "var(--r-sm)",
-                background: "none",
-                transition: "color .15s, border-color .15s",
-              }}
-            >
-              Sair
-            </button>
-          </form>
-          {(user.role === "admin" || user.role === "super_admin") && (
-            <a
-              href="/admin"
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                letterSpacing: ".12em",
-                textTransform: "uppercase",
-                color: "var(--signal-500)",
-                textDecoration: "none",
-                padding: "4px 8px",
-                border: "1px solid var(--signal-700)",
-                borderRadius: "var(--r-sm)",
-              }}
-            >
-              Admin
-            </a>
-          )}
-        </div>
-      )}
     </>
   );
 }

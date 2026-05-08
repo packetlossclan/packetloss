@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { ads, users } from "@/db/schema";
+import { ads, users, applications } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
 
 async function requireAdmin() {
@@ -157,5 +157,28 @@ export async function toggleAd(id: number, enabled: boolean) {
 export async function deleteAd(id: number) {
   await requireAdmin();
   await db.delete(ads).where(eq(ads.id, id));
+  revalidatePath("/admin");
+}
+
+// ─── Application management ───────────────────────────────────────────────────
+
+export async function reviewApplication(
+  appId: number,
+  status: "approved" | "rejected",
+  reviewNote: string,
+) {
+  const actor = await requireAdmin();
+
+  await db
+    .update(applications)
+    .set({ status, reviewedBy: actor.id, reviewNote: reviewNote || null, updatedAt: new Date() })
+    .where(eq(applications.id, appId));
+
+  revalidatePath("/admin");
+}
+
+export async function deleteApplication(appId: number) {
+  await requireAdmin();
+  await db.delete(applications).where(eq(applications.id, appId));
   revalidatePath("/admin");
 }

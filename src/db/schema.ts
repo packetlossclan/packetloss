@@ -56,5 +56,45 @@ export const ads = sqliteTable("ads", {
     .default(sql`(unixepoch() * 1000)`),
 });
 
+export const applications = sqliteTable("applications", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  // Personal info
+  fullName: text("full_name").notNull(),
+  birthDate: text("birth_date").notNull(), // ISO date string YYYY-MM-DD
+  country: text("country").notNull().default("Brasil"),
+  state: text("state").notNull(),
+  city: text("city").notNull(),
+  // Gaming info
+  reason: text("reason").notNull(),
+  favoriteRole: text("favorite_role", {
+    enum: ["crewmate", "impostor", "both"],
+  })
+    .notNull()
+    .default("both"),
+  amogusHours: integer("amogus_hours").notNull().default(0),
+  hoursPerWeek: integer("hours_per_week").notNull().default(0),
+  otherGames: text("other_games"),
+  howFound: text("how_found"),
+  extraInfo: text("extra_info"),
+  // Status
+  status: text("status", { enum: ["pending", "approved", "rejected"] })
+    .notNull()
+    .default("pending"),
+  reviewedBy: integer("reviewed_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  reviewNote: text("review_note"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+});
+
 export type User = typeof users.$inferSelect;
 export type Ad = typeof ads.$inferSelect;
+export type Application = typeof applications.$inferSelect;

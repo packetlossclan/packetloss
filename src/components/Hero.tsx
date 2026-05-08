@@ -70,9 +70,10 @@ export function useTyping(
 interface HeroProps {
   accent?: string;
   impostorMode?: boolean;
+  user?: { username: string } | null;
 }
 
-export function HeroCommand({ accent, impostorMode }: HeroProps) {
+export function HeroCommand({ accent, impostorMode, user }: HeroProps) {
   const ac = accent ?? "var(--signal-500)";
   const subRef = useTyping(
     "Um clã de elite de Among Us, fundado em 2021. Estratégia e um histórico de impostores que ninguém conseguiu acusar.",
@@ -185,27 +186,51 @@ export function HeroCommand({ accent, impostorMode }: HeroProps) {
               marginBottom: 48,
             }}
           >
-            <a
-              href="/auth/discord"
-              className="btn btn--primary"
-              style={{
-                background: impostorMode ? "var(--impostor-500)" : ac,
-                boxShadow: impostorMode
-                  ? "var(--glow-impostor)"
-                  : "var(--glow-signal)",
-                color: "var(--void-000)",
-              }}
-            >
-              {impostorMode ? "Você está rodeado →" : "Entrar com Discord →"}
-            </a>
-            <a
-              href="https://packetloss.com.br/discord"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn--ghost"
-            >
-              Entrar no Servidor
-            </a>
+            {user ? (
+              <>
+                <a
+                  href="/alistar"
+                  className="btn btn--primary"
+                  style={{
+                    background: impostorMode ? "var(--impostor-500)" : ac,
+                    boxShadow: impostorMode ? "var(--glow-impostor)" : "var(--glow-signal)",
+                    color: "var(--void-000)",
+                  }}
+                >
+                  {impostorMode ? "Você está rodeado →" : "Candidatar-se →"}
+                </a>
+                <a
+                  href="https://packetloss.com.br/discord"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn--ghost"
+                >
+                  Entrar no Servidor
+                </a>
+              </>
+            ) : (
+              <>
+                <a
+                  href="/auth/discord"
+                  className="btn btn--primary"
+                  style={{
+                    background: impostorMode ? "var(--impostor-500)" : ac,
+                    boxShadow: impostorMode ? "var(--glow-impostor)" : "var(--glow-signal)",
+                    color: "var(--void-000)",
+                  }}
+                >
+                  {impostorMode ? "Você está rodeado →" : "Entrar com Discord →"}
+                </a>
+                <a
+                  href="https://packetloss.com.br/discord"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn--ghost"
+                >
+                  Entrar no Servidor
+                </a>
+              </>
+            )}
           </div>
 
           <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
