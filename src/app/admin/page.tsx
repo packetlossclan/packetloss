@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { asc, desc } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/db";
-import { ads, users, applications, type Ad } from "@/db/schema";
+import { ads, users, applications, inscriptions, type Ad, type Inscription } from "@/db/schema";
 import {
   createAd,
   updateUserRole,
@@ -11,6 +11,10 @@ import {
   updateAd,
   reviewApplication,
   deleteApplication,
+  createInscription,
+  toggleInscription,
+  resetInscription,
+  deleteInscription,
 } from "./actions";
 import { ScheduleFields } from "./ScheduleFields";
 
@@ -108,18 +112,19 @@ export default async function AdminPage({
 
   const { sec } = await searchParams;
   const activeSection =
-    sec === "usuarios" || sec === "anuncios" || sec === "candidaturas"
+    sec === "usuarios" || sec === "anuncios" || sec === "candidaturas" || sec === "inscricao"
       ? sec
       : "candidaturas";
 
   const isSuperAdmin = currentUser.role === "super_admin";
 
-  const [allUsers, allAds, allApplications] = await Promise.all([
+  const [allUsers, allAds, allApplications, allInscriptions] = await Promise.all([
     isSuperAdmin
       ? db.select().from(users).orderBy(asc(users.createdAt))
       : Promise.resolve([]),
     db.select().from(ads).orderBy(asc(ads.createdAt)),
     db.select().from(applications).orderBy(desc(applications.createdAt)),
+    db.select().from(inscriptions).orderBy(desc(inscriptions.createdAt)),
   ]);
 
   // Join application user info
@@ -128,6 +133,24 @@ export default async function AdminPage({
     .from(users);
   const userMap = Object.fromEntries(appUsersRaw.map((u) => [u.id, u]));
   const pendingCount = allApplications.filter((a) => a.status === "pending").length;
+
+  function inscriptionStatus(insc: Inscription, now: Date): string {
+    if (!insc.enabled) return "desabilitada";
+    if (insc.startsAt && insc.startsAt > now) return "agendada";
+    if (insc.expiresAt && insc.expiresAt <= now) return "encerrada";
+    if (!insc.messageId) return "pendente";
+    return "ativa";
+  }
+
+  function parseParticipants(raw: string): { discordId: string; displayName: string; joinedAt: string }[] {
+    try { return JSON.parse(raw); } catch { return []; }
+  }
+
+  const now = new Date();
+  const activeInscriptionCount = allInscriptions.filter((i) => {
+    const s = inscriptionStatus(i, now);
+    return s === "ativa" || s === "pendente";
+  }).length;
 
   // ─── Shared styles ────────────────────────────────────────────────────────
 
@@ -241,6 +264,7 @@ export default async function AdminPage({
             { key: "candidaturas", label: "Candidaturas", badge: pendingCount > 0 ? pendingCount : null },
             ...(isSuperAdmin ? [{ key: "usuarios", label: "Usuários", badge: null as number | null }] : []),
             { key: "anuncios", label: "Anúncios", badge: allAds.length > 0 ? allAds.length : null },
+            { key: "inscricao", label: "Inscrição", badge: activeInscriptionCount > 0 ? activeInscriptionCount : null },
           ] as { key: string; label: string; badge: number | null }[]).map(({ key, label, badge }) => (
             <a key={key} href={`/admin?sec=${key}`} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "11px 20px", fontSize: 12, letterSpacing: ".08em", textTransform: "uppercase", color: activeSection === key ? "var(--signal-300)" : "var(--hull-300)", background: activeSection === key ? "rgba(0,229,199,0.07)" : "transparent", borderLeft: `2px solid ${activeSection === key ? "var(--signal-500)" : "transparent"}`, textDecoration: "none", transition: "color 0.15s" }}>
               {label}
@@ -511,6 +535,128 @@ export default async function AdminPage({
                 </table>
               )}
             </div>
+          </section>
+        )}
+        {/* ══ INSCRIÇÃO ══════════════════════════════════════════════════════════ */}
+        {activeSection === "inscricao" && (
+          <section>
+            <div style={{ marginBottom: 28 }}>
+              <h1 style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 700, color: "var(--hull-100)", marginBottom: 4 }}>Inscrição</h1>
+              <p style={{ fontSize: 12, color: "var(--hull-400)" }}>Lista de inscrições gerenciadas pelo bot no Discord</p>
+            </div>
+
+            {/* Nova inscrição */}
+            <div style={{ background: "var(--void-100)", border: "1px solid var(--void-300)", borderRadius: 8, padding: 24, marginBottom: 32 }}>
+              <div style={{ fontSize: 12, color: "var(--hull-300)", letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 16 }}>Nova inscrição</div>
+              <form action={createInscription}>
+                <div style={fieldStyle}>
+                  <label style={labelStyle} htmlFor="insc-title">Título</label>
+                  <input id="insc-title" name="title" required placeholder="Ex: Inscrição para o Torneio #5" style={inputStyle} />
+                </div>
+                <div style={fieldStyle}>
+                  <label style={labelStyle} htmlFor="insc-desc">Descrição (opcional)</label>
+                  <textarea id="insc-desc" name="description" style={textareaStyle} placeholder="Texto exibido na mensagem do Discord" />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+                  <div style={fieldStyle}>
+                    <label style={labelStyle} htmlFor="insc-channel">Canal do Discord (ID)</label>
+                    <input id="insc-channel" name="channelId" placeholder="Padrão: INSCRICAO_CHANNEL_ID" style={inputStyle} />
+                  </div>
+                  <div style={fieldStyle}>
+                    <label style={labelStyle} htmlFor="insc-max">Máximo de participantes (opcional)</label>
+                    <input id="insc-max" name="maxParticipants" type="number" min="1" style={inputStyle} />
+                  </div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+                  <div style={fieldStyle}>
+                    <label style={labelStyle} htmlFor="insc-starts">Abertura (opcional)</label>
+                    <input id="insc-starts" name="startsAt" type="datetime-local" style={inputStyle} />
+                  </div>
+                  <div style={fieldStyle}>
+                    <label style={labelStyle} htmlFor="insc-expires">Encerramento (opcional)</label>
+                    <input id="insc-expires" name="expiresAt" type="datetime-local" style={inputStyle} />
+                  </div>
+                </div>
+                <button type="submit" style={btnPrimary}>+ Criar inscrição</button>
+              </form>
+            </div>
+
+            {/* Lista */}
+            <div style={{ fontSize: 11, color: "var(--hull-400)", letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 12 }}>
+              Inscrições cadastradas ({allInscriptions.length})
+            </div>
+            {allInscriptions.length === 0 ? (
+              <div style={{ padding: 48, textAlign: "center", color: "var(--hull-400)", fontSize: 13, background: "var(--void-100)", border: "1px solid var(--void-300)", borderRadius: 8 }}>Nenhuma inscrição criada ainda.</div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {allInscriptions.map((insc) => {
+                  const status = inscriptionStatus(insc, now);
+                  const participants = parseParticipants(insc.participants);
+                  const statusColor = { ativa: "var(--signal-300)", pendente: "var(--crew-yellow)", agendada: "var(--hull-300)", encerrada: "var(--hull-400)", desabilitada: "var(--impostor-300)" }[status] ?? "var(--hull-300)";
+                  const countStr = insc.maxParticipants ? `${participants.length}/${insc.maxParticipants}` : String(participants.length);
+                  return (
+                    <div key={insc.id} style={{ background: "var(--void-100)", border: "1px solid var(--void-300)", borderRadius: 8, overflow: "hidden" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", gap: 12, flexWrap: "wrap" }}>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: "var(--hull-100)" }}>{insc.title}</div>
+                          <div style={{ fontSize: 11, color: "var(--hull-400)", marginTop: 2 }}>
+                            {participants.length > 0 ? `${countStr} participante${participants.length !== 1 ? "s" : ""}` : "Nenhum participante"}
+                            {insc.expiresAt ? ` · Encerra ${fmt(insc.expiresAt)}` : ""}
+                            {insc.messageId ? ` · msg: ${insc.messageId}` : ""}
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 4, fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: statusColor, background: `color-mix(in srgb, ${statusColor} 12%, transparent)`, border: `1px solid color-mix(in srgb, ${statusColor} 35%, transparent)` }}>
+                            {status}
+                          </span>
+                          <div style={{ display: "flex", gap: 6 }}>
+                            <form action={async () => { "use server"; await toggleInscription(insc.id, !insc.enabled); }}>
+                              <button type="submit" style={btnSecondary}>{insc.enabled ? "Pausar" : "Ativar"}</button>
+                            </form>
+                            <form action={async () => { "use server"; await resetInscription(insc.id); }}>
+                              <button type="submit" style={btnSecondary} title="Limpa participantes e repostará a mensagem">Resetar</button>
+                            </form>
+                            <form action={async () => { "use server"; await deleteInscription(insc.id); }}>
+                              <button type="submit" style={btnDanger}>Excluir</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                      {(insc.description || participants.length > 0) && (
+                        <details>
+                          <summary style={{ padding: "8px 20px", cursor: "pointer", fontSize: 11, color: "var(--hull-400)", letterSpacing: ".06em", textTransform: "uppercase", listStyle: "none", userSelect: "none", borderTop: "1px solid var(--void-300)" }}>Ver detalhes ▾</summary>
+                          <div style={{ padding: "12px 20px 20px" }}>
+                            {insc.description && (
+                              <div style={{ marginBottom: 16 }}>
+                                <div style={{ fontSize: 10, color: "var(--hull-400)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 4 }}>Descrição</div>
+                                <p style={{ fontSize: 13, color: "var(--hull-200)", margin: 0, lineHeight: 1.65 }}>{insc.description}</p>
+                              </div>
+                            )}
+                            <div>
+                              <div style={{ fontSize: 10, color: "var(--hull-400)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 8 }}>Participantes ({countStr})</div>
+                              {participants.length === 0 ? (
+                                <p style={{ fontSize: 13, color: "var(--hull-400)", margin: 0, fontStyle: "italic" }}>Nenhum participante ainda.</p>
+                              ) : (
+                                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                  {participants.map((p, i) => (
+                                    <div key={p.discordId} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "var(--hull-200)" }}>
+                                      <span style={{ fontSize: 11, color: "var(--hull-400)", minWidth: 20, textAlign: "right" }}>{i + 1}.</span>
+                                      <span style={{ fontWeight: 500 }}>{p.displayName}</span>
+                                      <span style={{ fontSize: 11, color: "var(--hull-400)" }}>({p.discordId})</span>
+                                      <span style={{ fontSize: 11, color: "var(--hull-400)", marginLeft: "auto" }}>{fmt(new Date(p.joinedAt))}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </details>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </section>
         )}
       </main>

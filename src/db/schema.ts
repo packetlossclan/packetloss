@@ -95,6 +95,31 @@ export const applications = sqliteTable("applications", {
     .default(sql`(unixepoch() * 1000)`),
 });
 
+export const inscriptions = sqliteTable("inscriptions", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  description: text("description"),
+  channelId: text("channel_id"),
+  messageId: text("message_id"),
+  /** JSON array of { discordId, displayName, joinedAt } */
+  participants: text("participants").notNull().default("[]"),
+  maxParticipants: integer("max_participants"),
+  enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),
+  startsAt: integer("starts_at", { mode: "timestamp_ms" }),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }),
+  closedAt: integer("closed_at", { mode: "timestamp_ms" }),
+  createdBy: integer("created_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+});
+
 export type User = typeof users.$inferSelect;
 export type Ad = typeof ads.$inferSelect;
 export type Application = typeof applications.$inferSelect;
+export type Inscription = typeof inscriptions.$inferSelect;

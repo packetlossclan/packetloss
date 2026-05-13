@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { ads, users, applications } from "@/db/schema";
+import { ads, users, applications, inscriptions } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
 
 async function requireAdmin() {
@@ -180,5 +180,57 @@ export async function reviewApplication(
 export async function deleteApplication(appId: number) {
   await requireAdmin();
   await db.delete(applications).where(eq(applications.id, appId));
+  revalidatePath("/admin");
+}
+
+// ─── Inscription management ───────────────────────────────────────────────────
+
+export async function createInscription(formData: FormData) {
+  const actor = await requireAdmin();
+
+  const title = String(formData.get("title") ?? "").trim();
+  if (!title) throw new Error("Título é obrigatório");
+
+  const description = String(formData.get("description") ?? "").trim() || null;
+  const channelId = String(formData.get("channelId") ?? "").trim() || null;
+  const maxParticipantsRaw = formData.get("maxParticipants");
+  const maxParticipants = maxParticipantsRaw ? Number(maxParticipantsRaw) : null;
+  const startsAtRaw = formData.get("startsAt");
+  const expiresAtRaw = formData.get("expiresAt");
+
+  await db.insert(inscriptions).values({
+    title,
+    description,
+    channelId,
+    maxParticipants: maxParticipants && maxParticipants > 0 ? maxParticipants : null,
+    startsAt: startsAtRaw ? new Date(String(startsAtRaw)) : null,
+    expiresAt: expiresAtRaw ? new Date(String(expiresAtRaw)) : null,
+    createdBy: actor.id,
+  });
+
+  revalidatePath("/admin");
+}
+
+export async function toggleInscription(id: number, enabled: boolean) {
+  await requireAdmin();
+  await db
+    .update(inscriptions)
+    .set({ enabled, updatedAt: new Date() })
+    .where(eq(inscriptions.id, id));
+  revalidatePath("/admin");
+}
+
+export async function resetInscription(id: number) {
+  await requireAdmin();
+  await db
+    .update(inscriptions)
+    .set({ messageId: null, participants: "[]", closedAt: null, updatedAt: new Date() })
+    .where(eq(inscriptions.id, id));
+  revalidatePath("/admin");
+}
+
+export async function deleteInscription(id: number) {
+  await requireAdmin();
+  await db.delete(inscriptions).where(eq(inscriptions.id, id));
   revalidatePath("/admin");
 }
