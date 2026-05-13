@@ -18,7 +18,10 @@ git clean -fxd
 cp .env .env.production
 
 echo "📥 Instalando dependências..."
-pnpm install
+if ! pnpm install --no-frozen-lockfile; then
+  echo "⚠️ Falha ao instalar dependências. Abortando o deploy..."
+  exit 1
+fi
 
 echo "🗃️ Sincronizando banco de dados..."
 if ! pnpm run push; then
