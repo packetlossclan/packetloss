@@ -12,9 +12,9 @@ echo "📦 Preparando ambiente de deploy..."
 [ -e $WORKDIR ] && cp -af $WORKDIR $TMPDIR
 cd $TMPDIR || exit 1
 
-git clean -fxd -e .env -e local.db
+#git clean -fxd -e .env -e drizzle/packetloss.db
 #git clean -fxd -e .env
-#git clean -fxd
+git clean -fxd
 cp .env .env.production
 
 echo "📥 Instalando dependências..."
