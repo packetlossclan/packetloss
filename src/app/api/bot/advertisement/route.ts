@@ -56,6 +56,7 @@ export async function GET(request: NextRequest): Promise<Response> {
           return null;
         }
       })(),
+      channelId: ad.channelId ?? null,
       lastPostedAt: ad.lastPostedAt ? ad.lastPostedAt.toISOString() : null,
       startsAt: ad.startsAt ? ad.startsAt.toISOString() : null,
       expiresAt: ad.expiresAt ? ad.expiresAt.toISOString() : null,

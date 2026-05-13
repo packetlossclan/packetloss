@@ -97,6 +97,9 @@ export async function createAd(formData: FormData) {
   const { scheduleType, scheduleInterval, scheduleTime, scheduleDates } =
     parseScheduleFields(formData);
 
+  const channelIdRaw = formData.get("channelId");
+  const channelId = channelIdRaw ? String(channelIdRaw).trim() || null : null;
+
   await db.insert(ads).values({
     title,
     message,
@@ -104,6 +107,7 @@ export async function createAd(formData: FormData) {
     scheduleInterval,
     scheduleTime,
     scheduleDates,
+    channelId,
     startsAt: startsAtRaw ? new Date(String(startsAtRaw)) : null,
     expiresAt: expiresAtRaw ? new Date(String(expiresAtRaw)) : null,
     createdBy: actor?.id ?? null,
@@ -125,6 +129,9 @@ export async function updateAd(id: number, formData: FormData) {
   const { scheduleType, scheduleInterval, scheduleTime, scheduleDates } =
     parseScheduleFields(formData);
 
+  const channelIdRaw = formData.get("channelId");
+  const channelId = channelIdRaw ? String(channelIdRaw).trim() || null : null;
+
   await db
     .update(ads)
     .set({
@@ -134,6 +141,7 @@ export async function updateAd(id: number, formData: FormData) {
       scheduleInterval,
       scheduleTime,
       scheduleDates,
+      channelId,
       startsAt: startsAtRaw ? new Date(String(startsAtRaw)) : null,
       expiresAt: expiresAtRaw ? new Date(String(expiresAtRaw)) : null,
       updatedAt: new Date(),

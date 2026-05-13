@@ -41,6 +41,8 @@ export const ads = sqliteTable("ads", {
   scheduleTime: text("schedule_time"),
   /** JSON array of "YYYY-MM-DDTHH:MM" strings for specific_dates */
   scheduleDates: text("schedule_dates"),
+  /** Discord channel ID override; null means use the bot default */
+  channelId: text("channel_id"),
   startsAt: integer("starts_at", { mode: "timestamp_ms" }),
   expiresAt: integer("expires_at", { mode: "timestamp_ms" }),
   enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),

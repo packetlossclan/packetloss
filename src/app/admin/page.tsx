@@ -447,6 +447,10 @@ export default async function AdminPage({
                   <textarea id="message" name="message" required style={textareaStyle} />
                 </div>
                 <ScheduleFields />
+                <div style={fieldStyle}>
+                  <label style={labelStyle} htmlFor="channelId">Canal do Discord (ID, opcional)</label>
+                  <input id="channelId" name="channelId" placeholder="Padrão: ADVERTISEMENT_CHANNEL_ID" style={inputStyle} />
+                </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
                   <div style={fieldStyle}>
                     <label style={labelStyle} htmlFor="startsAt">Válido a partir de (opcional)</label>
@@ -496,6 +500,10 @@ export default async function AdminPage({
                                 <textarea id={`m-${ad.id}`} name="message" defaultValue={ad.message} required style={textareaStyle} />
                               </div>
                               <ScheduleFields defaultType={ad.scheduleType as import("./ScheduleFields").ScheduleType} defaultInterval={ad.scheduleInterval} defaultTime={ad.scheduleTime} defaultDates={ad.scheduleDates} />
+                              <div style={fieldStyle}>
+                                <label htmlFor={`ch-${ad.id}`} style={labelStyle}>Canal do Discord (ID, opcional)</label>
+                                <input id={`ch-${ad.id}`} name="channelId" defaultValue={ad.channelId ?? ""} placeholder="Padrão: ADVERTISEMENT_CHANNEL_ID" style={inputStyle} />
+                              </div>
                               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                                 <div>
                                   <label htmlFor={`s-${ad.id}`} style={labelStyle}>Inicia</label>

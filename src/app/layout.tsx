@@ -54,6 +54,9 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${nunito.variable} ${jetbrainsMono.variable}`}
     >
+      <head>
+        <link rel="icon" type="image/png" href="/images/logo.png" />
+      </head>
       <body style={{ fontFamily: "var(--font-nunito, var(--font-display))" }}>
         {children}
       </body>
