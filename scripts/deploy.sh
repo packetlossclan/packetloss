@@ -13,8 +13,7 @@ echo "📦 Preparando ambiente de deploy..."
 cd $TMPDIR || exit 1
 
 #git clean -fxd -e .env -e drizzle/packetloss.db
-#git clean -fxd -e .env
-git clean -fxd
+git clean -fxd -e .env
 cp .env .env.production
 
 echo "📥 Instalando dependências..."
