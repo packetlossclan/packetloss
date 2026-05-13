@@ -269,19 +269,21 @@ export function SiteHeader({
               )}
             </div>
           ) : (
-            /* Enlist CTA */
             <a
-              href="/alistar"
-              className="btn btn--primary"
+              href="/auth/discord"
               style={{
-                padding: "10px 18px",
+                padding: "8px 16px",
+                fontFamily: "var(--font-mono)",
                 fontSize: 11,
-                background: accent,
-                boxShadow: `0 0 24px ${accent}55`,
+                letterSpacing: ".12em",
+                textTransform: "uppercase",
+                color: accent,
+                border: `1px solid ${accent}55`,
+                borderRadius: "var(--r-md)",
+                transition: "border-color .15s, color .15s",
               }}
             >
-              <span className="dot" style={{ background: "var(--void-000)" }} />
-              Alistar
+              Entrar
             </a>
           )}
         </div>
@@ -300,9 +302,7 @@ export function SiteFooter({ accentColor }: SiteFooterProps) {
   return (
     <footer
       style={{
-        marginTop: 96,
         borderTop: "1px solid var(--void-300)",
-        background: "linear-gradient(180deg,rgba(5,6,10,0),rgba(15,18,32,0.7))",
         position: "relative",
         zIndex: 1,
       }}
@@ -310,29 +310,23 @@ export function SiteFooter({ accentColor }: SiteFooterProps) {
       <div
         className="container"
         style={{
-          padding: "48px 0 32px",
+          padding: "28px 0",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           flexWrap: "wrap",
-          gap: 24,
+          gap: 16,
         }}
       >
-        <div>
-          <div
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: 22,
-              fontWeight: 700,
-              marginBottom: 8,
-              color: "var(--hull-100)",
-            }}
-          >
-            PACKET<span style={{ color: accent }}>·</span>LOSS
-          </div>
-          <p style={{ color: "var(--hull-400)", fontSize: 13 }}>
-            Clã de elite Among Us. Fundado em 21 de agosto de 2021.
-          </p>
+        <div
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: 16,
+            fontWeight: 700,
+            color: "var(--hull-100)",
+          }}
+        >
+          PACKET<span style={{ color: accent }}>·</span>LOSS
         </div>
 
         <div style={{ display: "flex", gap: 12 }}>
@@ -367,30 +361,9 @@ export function SiteFooter({ accentColor }: SiteFooterProps) {
             </a>
           ))}
         </div>
-      </div>
 
-      <div
-        className="container"
-        style={{
-          padding: "16px 0 28px",
-          borderTop: "1px solid var(--void-200)",
-          display: "flex",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: 12,
-          alignItems: "center",
-        }}
-      >
         <div className="mono" style={{ color: "var(--hull-400)", fontSize: 11 }}>
-          © 2026 Packet Loss. Todos os impostores reservados.
-        </div>
-        <div
-          className="mono"
-          style={{ color: "var(--hull-400)", fontSize: 11, display: "flex", gap: 16 }}
-        >
-          <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
-            <span className="dot" /> Servidor online
-          </span>
+          © 2026 Packet Loss.
         </div>
       </div>
     </footer>

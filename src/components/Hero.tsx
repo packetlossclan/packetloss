@@ -76,7 +76,9 @@ interface HeroProps {
 export function HeroCommand({ accent, impostorMode, user }: HeroProps) {
   const ac = accent ?? "var(--signal-500)";
   const subRef = useTyping(
-    "Um clã de elite de Among Us, fundado em 2021. Estratégia e um histórico de impostores que ninguém conseguiu acusar.",
+    "Um clã de elite de Among Us, fundado em 2021.",
+    45,
+    500,
   );
 
   return (
@@ -84,299 +86,205 @@ export function HeroCommand({ accent, impostorMode, user }: HeroProps) {
       style={{
         position: "relative",
         zIndex: 2,
-        minHeight: "calc(100vh - var(--header-h))",
-        paddingTop: "calc(var(--header-h) + 64px)",
-        paddingBottom: 96,
+        minHeight: "calc(100svh - var(--header-h))",
+        display: "flex",
+        alignItems: "center",
+        paddingTop: "calc(var(--header-h) + 48px)",
+        paddingBottom: 80,
       }}
     >
+      {/* Ambient glow */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: "15%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: 700,
+          height: 500,
+          background: impostorMode
+            ? "radial-gradient(ellipse, rgba(255,46,77,0.1) 0%, transparent 65%)"
+            : "radial-gradient(ellipse, rgba(0,229,199,0.08) 0%, transparent 65%)",
+          pointerEvents: "none",
+        }}
+      />
+
       <div
         className="container"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1.4fr 1fr",
-          gap: 64,
-          alignItems: "center",
-          minHeight: 540,
-        }}
+        style={{ textAlign: "center", position: "relative" }}
       >
-        {/* Left: text */}
-        <div>
-          <div
-            className="eyebrow"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              marginBottom: 24,
-              color: impostorMode ? "var(--impostor-300)" : ac,
-            }}
-          >
-            <span
-              className="dot"
-              style={{
-                background: impostorMode ? "var(--impostor-500)" : ac,
-              }}
-            />
-            <span>
-              {impostorMode
-                ? "ATENÇÃO · IMPOSTOR DETECTADO"
-                : "Estação ativa · Região BR-SUL"}
-            </span>
-          </div>
-
-          <h1
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 700,
-              fontSize: "clamp(56px,9vw,128px)",
-              letterSpacing: "-0.03em",
-              lineHeight: 0.92,
-              color: "var(--hull-100)",
-              marginBottom: 24,
-            }}
-          >
-            PACKET
-            <br />
-            <span style={{ color: impostorMode ? "var(--impostor-300)" : ac }}>
-              LOSS
-            </span>
-            <span
-              style={{
-                display: "inline-block",
-                width: 14,
-                height: 14,
-                background: impostorMode ? "var(--impostor-500)" : ac,
-                marginLeft: 8,
-                verticalAlign: "middle",
-                animation: "blink 1.4s infinite",
-              }}
-            />
-          </h1>
-
-          <p
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 13,
-              color: "var(--hull-200)",
-              lineHeight: 1.7,
-              maxWidth: "52ch",
-              marginBottom: 32,
-              minHeight: 60,
-            }}
-          >
-            <span ref={subRef} />
-            <span
-              style={{
-                animation: "blink 0.8s infinite",
-                display: "inline-block",
-                width: 8,
-                height: 14,
-                background: "var(--hull-300)",
-                verticalAlign: "bottom",
-                marginLeft: 2,
-              }}
-            />
-          </p>
-
-          <div
-            style={{
-              display: "flex",
-              gap: 12,
-              flexWrap: "wrap",
-              marginBottom: 48,
-            }}
-          >
-            {user ? (
-              <>
-                <a
-                  href="/alistar"
-                  className="btn btn--primary"
-                  style={{
-                    background: impostorMode ? "var(--impostor-500)" : ac,
-                    boxShadow: impostorMode ? "var(--glow-impostor)" : "var(--glow-signal)",
-                    color: "var(--void-000)",
-                  }}
-                >
-                  {impostorMode ? "Você está rodeado →" : "Candidatar-se →"}
-                </a>
-                <a
-                  href="https://packetloss.com.br/discord"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn--ghost"
-                >
-                  Entrar no Servidor
-                </a>
-              </>
-            ) : (
-              <>
-                <a
-                  href="/auth/discord"
-                  className="btn btn--primary"
-                  style={{
-                    background: impostorMode ? "var(--impostor-500)" : ac,
-                    boxShadow: impostorMode ? "var(--glow-impostor)" : "var(--glow-signal)",
-                    color: "var(--void-000)",
-                  }}
-                >
-                  {impostorMode ? "Você está rodeado →" : "Entrar com Discord →"}
-                </a>
-                <a
-                  href="https://packetloss.com.br/discord"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn--ghost"
-                >
-                  Entrar no Servidor
-                </a>
-              </>
-            )}
-          </div>
-
-          <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-            {["Ranking #03 Global", "Top 1% ELO", "12x Campeões"].map((t) => (
-              <div
-                key={t}
-                className="mono"
-                style={{ color: "var(--hull-300)", fontSize: 11 }}
-              >
-                <span
-                  style={{
-                    color: impostorMode ? "var(--impostor-300)" : ac,
-                    marginRight: 6,
-                  }}
-                >
-                  ◆
-                </span>
-                {t}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right: crewmate + HUD rings */}
+        {/* Eyebrow */}
         <div
           style={{
-            position: "relative",
-            height: 520,
-            display: "grid",
-            placeItems: "center",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 32,
+            fontFamily: "var(--font-mono)",
+            fontSize: 11,
+            letterSpacing: ".24em",
+            textTransform: "uppercase",
+            color: impostorMode ? "var(--impostor-300)" : ac,
           }}
         >
-          {/* Radial glow */}
-          <div
+          <span
+            className="dot"
+            style={{ background: impostorMode ? "var(--impostor-500)" : ac }}
+          />
+          {impostorMode ? "Impostor detectado" : "Estação ativa · Região BR-SUL"}
+        </div>
+
+        {/* Title */}
+        <h1
+          style={{
+            fontSize: "clamp(72px, 14vw, 160px)",
+            letterSpacing: "-0.04em",
+            lineHeight: 0.9,
+            marginBottom: 36,
+            color: "var(--hull-100)",
+          }}
+        >
+          PACKET
+          <br />
+          <span style={{ color: impostorMode ? "var(--impostor-300)" : ac }}>
+            LOSS
+          </span>
+        </h1>
+
+        {/* Tagline */}
+        <p
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 14,
+            color: "var(--hull-300)",
+            lineHeight: 1.7,
+            maxWidth: "44ch",
+            margin: "0 auto 48px",
+            minHeight: 48,
+          }}
+        >
+          <span ref={subRef} />
+          <span
             style={{
-              position: "absolute",
-              inset: 0,
-              background: impostorMode
-                ? "radial-gradient(circle at center,rgba(255,46,77,0.18),transparent 60%)"
-                : `radial-gradient(circle at center,${ac}22,transparent 60%)`,
+              animation: "blink 0.8s infinite",
+              display: "inline-block",
+              width: 7,
+              height: 13,
+              background: "var(--hull-400)",
+              verticalAlign: "bottom",
+              marginLeft: 2,
             }}
           />
-          {/* SVG rings */}
-          <svg
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              opacity: 0.5,
-            }}
-            viewBox="0 0 400 400"
-          >
-            <circle
-              cx="200"
-              cy="200"
-              r="185"
-              stroke={
-                impostorMode ? "var(--impostor-700)" : "var(--signal-700)"
-              }
-              strokeWidth="0.5"
-              fill="none"
-              strokeDasharray="2 4"
-              opacity="0.6"
-            >
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="0 200 200"
-                to="360 200 200"
-                dur="60s"
-                repeatCount="indefinite"
-              />
-            </circle>
-            <circle
-              cx="200"
-              cy="200"
-              r="145"
-              stroke={
-                impostorMode ? "var(--impostor-700)" : "var(--signal-700)"
-              }
-              strokeWidth="0.5"
-              fill="none"
-              opacity="0.4"
-            />
-            <circle
-              cx="200"
-              cy="200"
-              r="105"
-              stroke={impostorMode ? "var(--impostor-300)" : ac}
-              strokeWidth="0.5"
-              fill="none"
-              strokeDasharray="4 8"
-              opacity="0.5"
-            >
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="360 200 200"
-                to="0 200 200"
-                dur="40s"
-                repeatCount="indefinite"
-              />
-            </circle>
-          </svg>
-          {/* Crewmate */}
-          <div
-            className="brackets"
-            style={{ position: "relative", padding: 16, zIndex: 2 }}
-          >
-            <Crewmate
-              size={240}
-              hero
-              variant={impostorMode ? "impostor" : "crew"}
-            />
-          </div>
-          {/* HUD tags */}
-          <FloatingTag
-            label="LAT 38ms"
-            x="6%"
-            y="12%"
-            color="var(--signal-300)"
-            delay={0}
-          />
-          <FloatingTag
-            label="ID: VENT.LORD"
-            x="68%"
-            y="20%"
-            color="var(--hull-200)"
-            delay={0.5}
-          />
-          <FloatingTag
-            label="STATUS: ACTIVE"
-            x="10%"
-            y="80%"
-            color="var(--signal-300)"
-            delay={1}
-          />
-          <FloatingTag
-            label={impostorMode ? "SABOTAGEM DETECTADA" : "PROTOCOL — SKELD/06"}
-            x="55%"
-            y="86%"
-            color={impostorMode ? "var(--impostor-300)" : "var(--hull-300)"}
-            delay={1.5}
-          />
+        </p>
+
+        {/* CTAs */}
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            justifyContent: "center",
+            flexWrap: "wrap",
+            marginBottom: 72,
+          }}
+        >
+          {user ? (
+            <>
+              <a
+                href="/alistar"
+                className="btn btn--primary"
+                style={{
+                  background: impostorMode ? "var(--impostor-500)" : ac,
+                  boxShadow: impostorMode
+                    ? "var(--glow-impostor)"
+                    : "var(--glow-signal)",
+                  color: "var(--void-000)",
+                }}
+              >
+                {impostorMode ? "Você está rodeado →" : "Candidatar-se →"}
+              </a>
+              <a
+                href="https://packetloss.com.br/discord"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn--ghost"
+              >
+                Servidor Discord
+              </a>
+            </>
+          ) : (
+            <>
+              <a
+                href="/auth/discord"
+                className="btn btn--primary"
+                style={{
+                  background: impostorMode ? "var(--impostor-500)" : ac,
+                  boxShadow: impostorMode
+                    ? "var(--glow-impostor)"
+                    : "var(--glow-signal)",
+                  color: "var(--void-000)",
+                }}
+              >
+                {impostorMode ? "Você está rodeado →" : "Entrar com Discord →"}
+              </a>
+              <a
+                href="https://packetloss.com.br/discord"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn--ghost"
+              >
+                Servidor Discord
+              </a>
+            </>
+          )}
+        </div>
+
+        {/* Stats */}
+        <div
+          style={{
+            display: "flex",
+            gap: 48,
+            justifyContent: "center",
+            flexWrap: "wrap",
+            borderTop: "1px solid var(--void-300)",
+            paddingTop: 32,
+          }}
+        >
+          {(
+            [
+              ["4.827", "Partidas"],
+              ["3.194", "Vitórias"],
+              ["12×", "Campeões"],
+              ["#03", "Global"],
+            ] as const
+          ).map(([v, l]) => (
+            <div key={l} style={{ textAlign: "center" }}>
+              <div
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 700,
+                  fontSize: "clamp(24px, 3.5vw, 36px)",
+                  letterSpacing: "-0.02em",
+                  color: impostorMode ? "var(--impostor-300)" : ac,
+                  lineHeight: 1.1,
+                }}
+              >
+                {v}
+              </div>
+              <div
+                className="mono"
+                style={{
+                  fontSize: 10,
+                  letterSpacing: ".18em",
+                  color: "var(--hull-400)",
+                  marginTop: 6,
+                  textTransform: "uppercase",
+                }}
+              >
+                {l}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
