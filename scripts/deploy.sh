@@ -21,9 +21,7 @@ echo "📥 Instalando dependências..."
 pnpm install
 
 echo "🗃️ Sincronizando banco de dados..."
-pnpm drizzle-kit push --force
-
-if [ $? -ne 0 ]; then
+if ! pnpm run push; then
   echo "⚠️ Falha ao sincronizar banco de dados. Abortando o deploy..."
   exit 1
 fi
