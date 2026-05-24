@@ -27,7 +27,7 @@ const STATUS_CONFIG: Record<
     desc: "Sua candidatura já foi aprovada. Você faz parte do Packet Loss.",
     color: "var(--signal-300)",
     cta: "Entrar no servidor",
-    ctaHref: "https://packetloss.com.br/discord",
+    ctaHref: "https://discord.gg/nauSjkVG",
   },
   rejected: {
     icon: "✕",
