@@ -124,7 +124,14 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           </div>
         )}
 
-        <div style={{ display: "flex", gap: "var(--s-3)", flexWrap: "wrap", justifyContent: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "var(--s-3)",
+            flexWrap: "wrap",
+            justifyContent: "center",
+          }}
+        >
           <button
             type="button"
             onClick={reset}

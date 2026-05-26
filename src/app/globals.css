@@ -529,3 +529,112 @@ pre {
     transform: translateY(-100vh);
   }
 }
+
+/* ===================================================================
+   Admin Panel — Responsive Layout
+   =================================================================== */
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--void-000);
+  color: var(--hull-100);
+  font-family: var(--font-mono);
+}
+
+.admin-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--void-050);
+  border-right: 1px solid var(--void-300);
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+}
+
+.admin-mobile-topbar {
+  display: none;
+}
+
+.admin-sidebar-overlay {
+  display: none;
+}
+
+.admin-main {
+  flex: 1;
+  padding: 36px 40px;
+  min-width: 0;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 767px) {
+  .admin-mobile-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: 56px;
+    background: var(--void-050);
+    border-bottom: 1px solid var(--void-300);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-shrink: 0;
+    width: 100%;
+  }
+
+  .admin-sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 190;
+    border: none;
+    padding: 0;
+    cursor: default;
+  }
+
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    width: 260px;
+    height: 100vh;
+    z-index: 200;
+    transition: left 0.25s ease;
+    padding-top: 16px;
+    /* hide by default on mobile — shown via class */
+    border-right: 1px solid var(--void-400);
+  }
+
+  .admin-sidebar--open {
+    left: 0;
+  }
+
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-main {
+    padding: 20px 16px;
+  }
+
+  .admin-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
