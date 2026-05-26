@@ -3,17 +3,10 @@
   hosts: packetloss
 
   tasks:
-    - name: Atualizar código-fonte via git pull
-      ansible.builtin.git:
-        repo: git@github.com:packetlossclan/packetloss.git
-        dest: /var/www/packetloss
-        version: "{{ git_branch | default('main') }}"
-        update: true
-
     - name: Copiar configuração do Nginx
       ansible.builtin.copy:
-        src: ../files/packetloss.com.br.conf
-        dest: /etc/nginx/conf.d/packetloss.com.br.conf
+        src: files/09-packetloss.com.br.conf
+        dest: /etc/nginx/sites.d/09-packetloss.com.br.conf
         owner: root
         group: root
         mode: "0644"
@@ -22,24 +15,13 @@
 
     - name: Copiar unit do systemd
       ansible.builtin.copy:
-        src: ../files/packetloss.service
+        src: "files/packetloss.service"
         dest: /etc/systemd/system/packetloss.service
         owner: root
         group: root
         mode: "0644"
       become: true
       notify: Recarregar systemd
-
-    - name: Executar script de deploy
-      ansible.builtin.command:
-        cmd: bash scripts/deploy.sh
-        chdir: /var/www/packetloss
-      register: deploy_output
-      changed_when: true
-
-    - name: Exibir saída do deploy
-      ansible.builtin.debug:
-        var: deploy_output.stdout_lines
 
   handlers:
     - name: Recarregar Nginx

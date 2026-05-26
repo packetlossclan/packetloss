@@ -3,8 +3,21 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
+interface UserInfo {
+  username: string;
+  avatarUrl: string | null;
+  role: string;
+}
+
+interface SiteHeaderProps {
+  active?: string;
+  accentColor?: string;
+  user?: UserInfo | null;
+}
+
 const NAV_ITEMS: { href: string; label: string }[] = [
-  { href: "/#about", label: "Sobre" },
+  { href: "/", label: "Sobre" },
+  { href: "https://loja.packetloss.com.br", label: "Loja" },
   { href: "https://packetloss.com.br/discord", label: "Servidor" },
 ];
 
@@ -86,18 +99,6 @@ function Logo({ size = 36 }: { size?: number }) {
       }}
     />
   );
-}
-
-interface UserInfo {
-  username: string;
-  avatarUrl: string | null;
-  role: string;
-}
-
-interface SiteHeaderProps {
-  active?: string;
-  accentColor?: string;
-  user?: UserInfo | null;
 }
 
 export function SiteHeader({ active, accentColor, user }: SiteHeaderProps) {
