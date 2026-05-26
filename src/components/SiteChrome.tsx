@@ -293,6 +293,7 @@ export function SiteHeader({ active, accentColor, user }: SiteHeaderProps) {
           ? "1px solid var(--void-300)"
           : "1px solid transparent",
         transition: "background 0.3s, border-color 0.3s",
+        paddingTop: "env(safe-area-inset-top)",
       }}
     >
       {/* Main bar */}

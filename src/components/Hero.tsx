@@ -101,7 +101,7 @@ export function HeroCommand({ accent, impostorMode, user }: HeroProps) {
           top: "15%",
           left: "50%",
           transform: "translateX(-50%)",
-          width: 700,
+          width: "min(700px, 140vw)",
           height: 500,
           background: impostorMode
             ? "radial-gradient(ellipse, rgba(255,46,77,0.1) 0%, transparent 65%)"
