@@ -52,9 +52,12 @@ type ScheduleType =
 const INTERVAL_TYPES: ScheduleType[] = ["minutes", "hours", "days"];
 
 function parseScheduleFields(formData: FormData) {
-  const scheduleType = (formData.get("scheduleType") ?? "hours") as ScheduleType;
+  const scheduleType = (formData.get("scheduleType") ??
+    "hours") as ScheduleType;
   const scheduleIntervalRaw = formData.get("scheduleInterval");
-  const scheduleInterval = scheduleIntervalRaw ? Number(scheduleIntervalRaw) : null;
+  const scheduleInterval = scheduleIntervalRaw
+    ? Number(scheduleIntervalRaw)
+    : null;
   const scheduleTimeRaw = formData.get("scheduleTime");
   const scheduleTime = scheduleTimeRaw ? String(scheduleTimeRaw).trim() : null;
   const scheduleDatesRaw = formData.get("scheduleDates");
@@ -179,7 +182,12 @@ export async function reviewApplication(
 
   await db
     .update(applications)
-    .set({ status, reviewedBy: actor.id, reviewNote: reviewNote || null, updatedAt: new Date() })
+    .set({
+      status,
+      reviewedBy: actor.id,
+      reviewNote: reviewNote || null,
+      updatedAt: new Date(),
+    })
     .where(eq(applications.id, appId));
 
   revalidatePath("/admin");
@@ -202,7 +210,9 @@ export async function createInscription(formData: FormData) {
   const description = String(formData.get("description") ?? "").trim() || null;
   const channelId = String(formData.get("channelId") ?? "").trim() || null;
   const maxParticipantsRaw = formData.get("maxParticipants");
-  const maxParticipants = maxParticipantsRaw ? Number(maxParticipantsRaw) : null;
+  const maxParticipants = maxParticipantsRaw
+    ? Number(maxParticipantsRaw)
+    : null;
   const startsAtRaw = formData.get("startsAt");
   const expiresAtRaw = formData.get("expiresAt");
 
@@ -210,7 +220,8 @@ export async function createInscription(formData: FormData) {
     title,
     description,
     channelId,
-    maxParticipants: maxParticipants && maxParticipants > 0 ? maxParticipants : null,
+    maxParticipants:
+      maxParticipants && maxParticipants > 0 ? maxParticipants : null,
     startsAt: startsAtRaw ? new Date(String(startsAtRaw)) : null,
     expiresAt: expiresAtRaw ? new Date(String(expiresAtRaw)) : null,
     createdBy: actor.id,
@@ -232,7 +243,12 @@ export async function resetInscription(id: number) {
   await requireAdmin();
   await db
     .update(inscriptions)
-    .set({ messageId: null, participants: "[]", closedAt: null, updatedAt: new Date() })
+    .set({
+      messageId: null,
+      participants: "[]",
+      closedAt: null,
+      updatedAt: new Date(),
+    })
     .where(eq(inscriptions.id, id));
   revalidatePath("/admin");
 }

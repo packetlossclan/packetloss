@@ -14,7 +14,11 @@ function authenticate(request: NextRequest): boolean {
 type Participant = { discordId: string; displayName: string; joinedAt: string };
 
 function parseParticipants(raw: string): Participant[] {
-  try { return JSON.parse(raw); } catch { return []; }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
 }
 
 /** POST /api/bot/inscription/[id]/join — add a Discord user to the participant list */
@@ -33,10 +37,15 @@ export async function POST(
   }
 
   const body = await request.json().catch(() => null);
-  const discordId = typeof body?.discordId === "string" ? body.discordId.trim() : null;
-  const displayName = typeof body?.displayName === "string" ? body.displayName.trim() : null;
+  const discordId =
+    typeof body?.discordId === "string" ? body.discordId.trim() : null;
+  const displayName =
+    typeof body?.displayName === "string" ? body.displayName.trim() : null;
   if (!discordId || !displayName) {
-    return Response.json({ error: "discordId and displayName are required" }, { status: 400 });
+    return Response.json(
+      { error: "discordId and displayName are required" },
+      { status: 400 },
+    );
   }
 
   const [inscription] = await db
@@ -44,19 +53,30 @@ export async function POST(
     .from(inscriptions)
     .where(eq(inscriptions.id, inscriptionId));
 
-  if (!inscription) return Response.json({ error: "Not found" }, { status: 404 });
+  if (!inscription)
+    return Response.json({ error: "Not found" }, { status: 404 });
 
   const participants = parseParticipants(inscription.participants);
 
   if (participants.some((p) => p.discordId === discordId)) {
-    return Response.json({ error: "already_joined", participants }, { status: 409 });
+    return Response.json(
+      { error: "already_joined", participants },
+      { status: 409 },
+    );
   }
 
-  if (inscription.maxParticipants && participants.length >= inscription.maxParticipants) {
+  if (
+    inscription.maxParticipants &&
+    participants.length >= inscription.maxParticipants
+  ) {
     return Response.json({ error: "full", participants }, { status: 409 });
   }
 
-  participants.push({ discordId, displayName, joinedAt: new Date().toISOString() });
+  participants.push({
+    discordId,
+    displayName,
+    joinedAt: new Date().toISOString(),
+  });
 
   await db
     .update(inscriptions)

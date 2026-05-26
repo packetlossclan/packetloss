@@ -12,7 +12,11 @@ function authenticate(request: NextRequest): boolean {
 }
 
 function parseParticipants(raw: string) {
-  try { return JSON.parse(raw); } catch { return []; }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
 }
 
 /**
@@ -30,28 +34,43 @@ export async function GET(request: NextRequest): Promise<Response> {
   const now = new Date();
 
   const [toPost, toClose] = await Promise.all([
-    db.select().from(inscriptions).where(
-      and(
-        eq(inscriptions.enabled, true),
-        isNull(inscriptions.messageId),
-        or(isNull(inscriptions.startsAt), lte(inscriptions.startsAt, now)),
-        or(isNull(inscriptions.expiresAt), gt(inscriptions.expiresAt, now)),
-      ),
-    ),
-    db.select().from(inscriptions).where(
-      and(
-        isNotNull(inscriptions.messageId),
-        isNull(inscriptions.closedAt),
-        or(
-          eq(inscriptions.enabled, false),
-          and(isNotNull(inscriptions.expiresAt), lte(inscriptions.expiresAt, now)),
+    db
+      .select()
+      .from(inscriptions)
+      .where(
+        and(
+          eq(inscriptions.enabled, true),
+          isNull(inscriptions.messageId),
+          or(isNull(inscriptions.startsAt), lte(inscriptions.startsAt, now)),
+          or(isNull(inscriptions.expiresAt), gt(inscriptions.expiresAt, now)),
         ),
       ),
-    ),
+    db
+      .select()
+      .from(inscriptions)
+      .where(
+        and(
+          isNotNull(inscriptions.messageId),
+          isNull(inscriptions.closedAt),
+          or(
+            eq(inscriptions.enabled, false),
+            and(
+              isNotNull(inscriptions.expiresAt),
+              lte(inscriptions.expiresAt, now),
+            ),
+          ),
+        ),
+      ),
   ]);
 
   return Response.json({
-    toPost: toPost.map((i) => ({ ...i, participants: parseParticipants(i.participants) })),
-    toClose: toClose.map((i) => ({ ...i, participants: parseParticipants(i.participants) })),
+    toPost: toPost.map((i) => ({
+      ...i,
+      participants: parseParticipants(i.participants),
+    })),
+    toClose: toClose.map((i) => ({
+      ...i,
+      participants: parseParticipants(i.participants),
+    })),
   });
 }

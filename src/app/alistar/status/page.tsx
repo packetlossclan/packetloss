@@ -3,7 +3,14 @@ import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 
 const STATUS_CONFIG: Record<
   string,
-  { icon: string; title: string; desc: string; color: string; cta?: string; ctaHref?: string }
+  {
+    icon: string;
+    title: string;
+    desc: string;
+    color: string;
+    cta?: string;
+    ctaHref?: string;
+  }
 > = {
   submitted: {
     icon: "✦",
