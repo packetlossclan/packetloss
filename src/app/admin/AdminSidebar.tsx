@@ -78,13 +78,9 @@ export function AdminSidebar({
               letterSpacing: ".08em",
               textTransform: "uppercase",
               color:
-                activeSection === key
-                  ? "var(--signal-300)"
-                  : "var(--hull-300)",
+                activeSection === key ? "var(--signal-300)" : "var(--hull-300)",
               background:
-                activeSection === key
-                  ? "rgba(0,229,199,0.07)"
-                  : "transparent",
+                activeSection === key ? "rgba(0,229,199,0.07)" : "transparent",
               borderLeft: `2px solid ${activeSection === key ? "var(--signal-500)" : "transparent"}`,
               textDecoration: "none",
               transition: "color 0.15s",
