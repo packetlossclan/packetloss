@@ -25,6 +25,7 @@ git clean -fxd -e .env -e drizzle/packetloss.db
 cp .env .env.production
 
 echo "📥 Instalando dependências..."
+pnpm approve-builds --all 2>/dev/null || true
 if ! pnpm install --no-frozen-lockfile; then
   echo "⚠️ Falha ao instalar dependências. Abortando o deploy..."
   exit 1
