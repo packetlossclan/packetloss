@@ -67,7 +67,9 @@ export function ApplicationForm({ username }: Props) {
       setSelectedCity("");
       return;
     }
-    fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome")
+    fetch(
+      "https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome",
+    )
       .then((r) => r.json())
       .then((data: IbgeState[]) => setStates(data))
       .catch(() => setStates([]));
@@ -245,7 +247,9 @@ export function ApplicationForm({ username }: Props) {
       {/* ── Seção: Sobre no jogo ── */}
       <SectionTitle>No Jogo</SectionTitle>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+      <div
+        style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}
+      >
         <div style={fieldStyle}>
           <label style={labelStyle} htmlFor="favoriteRole">
             Papel favorito *

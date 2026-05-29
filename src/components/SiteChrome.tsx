@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 
 const NAV_ITEMS: { href: string; label: string }[] = [
   { href: "/#about", label: "Sobre" },
+  { href: "/rankeada", label: "Rankeada" },
   { href: "https://packetloss.com.br/discord", label: "Servidor" },
 ];
 
@@ -35,11 +36,7 @@ interface SiteHeaderProps {
   user?: UserInfo | null;
 }
 
-export function SiteHeader({
-  active,
-  accentColor,
-  user,
-}: SiteHeaderProps) {
+export function SiteHeader({ active, accentColor, user }: SiteHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -117,7 +114,8 @@ export function SiteHeader({
                 fontSize: 11,
                 letterSpacing: ".16em",
                 textTransform: "uppercase",
-                color: active === n.label ? "var(--signal-300)" : "var(--hull-200)",
+                color:
+                  active === n.label ? "var(--signal-300)" : "var(--hull-200)",
                 borderBottom: `1px solid ${active === n.label ? accent : "transparent"}`,
                 transition: "color .15s, border-color .15s",
                 textDecoration: "none",
@@ -170,7 +168,9 @@ export function SiteHeader({
                 >
                   {user.username}
                 </span>
-                <span style={{ color: "var(--hull-400)", fontSize: 10 }}>▾</span>
+                <span style={{ color: "var(--hull-400)", fontSize: 10 }}>
+                  ▾
+                </span>
               </button>
 
               {menuOpen && (
@@ -204,9 +204,19 @@ export function SiteHeader({
                         marginBottom: 2,
                       }}
                     >
-                      {user.role === "super_admin" ? "Super Admin" : user.role === "admin" ? "Admin" : "Membro"}
+                      {user.role === "super_admin"
+                        ? "Super Admin"
+                        : user.role === "admin"
+                          ? "Admin"
+                          : "Membro"}
                     </div>
-                    <div style={{ fontSize: 13, color: "var(--hull-100)", fontWeight: 600 }}>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        color: "var(--hull-100)",
+                        fontWeight: 600,
+                      }}
+                    >
                       {user.username}
                     </div>
                   </div>
@@ -243,7 +253,13 @@ export function SiteHeader({
                     ◆ Minha candidatura
                   </a>
 
-                  <div style={{ borderTop: "1px solid var(--void-300)", marginTop: 4, paddingTop: 4 }}>
+                  <div
+                    style={{
+                      borderTop: "1px solid var(--void-300)",
+                      marginTop: 4,
+                      paddingTop: 4,
+                    }}
+                  >
                     <form action="/auth/logout" method="POST">
                       <button
                         type="submit"
@@ -350,11 +366,14 @@ export function SiteFooter({ accentColor }: SiteFooterProps) {
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.borderColor = accent;
-                (e.currentTarget as HTMLElement).style.color = "var(--hull-100)";
+                (e.currentTarget as HTMLElement).style.color =
+                  "var(--hull-100)";
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "var(--void-400)";
-                (e.currentTarget as HTMLElement).style.color = "var(--hull-300)";
+                (e.currentTarget as HTMLElement).style.borderColor =
+                  "var(--void-400)";
+                (e.currentTarget as HTMLElement).style.color =
+                  "var(--hull-300)";
               }}
             >
               {s} ↗
@@ -362,7 +381,10 @@ export function SiteFooter({ accentColor }: SiteFooterProps) {
           ))}
         </div>
 
-        <div className="mono" style={{ color: "var(--hull-400)", fontSize: 11 }}>
+        <div
+          className="mono"
+          style={{ color: "var(--hull-400)", fontSize: 11 }}
+        >
           © 2026 Packet Loss.
         </div>
       </div>

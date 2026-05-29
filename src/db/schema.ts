@@ -110,6 +110,8 @@ export const inscriptions = sqliteTable("inscriptions", {
   startsAt: integer("starts_at", { mode: "timestamp_ms" }),
   expiresAt: integer("expires_at", { mode: "timestamp_ms" }),
   closedAt: integer("closed_at", { mode: "timestamp_ms" }),
+  /** Hours before match (expiresAt) to post the announcement */
+  announcementHoursBefore: integer("announcement_hours_before").default(2),
   createdBy: integer("created_by").references(() => users.id, {
     onDelete: "set null",
   }),

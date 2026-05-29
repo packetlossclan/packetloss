@@ -14,7 +14,11 @@ function authenticate(request: NextRequest): boolean {
 type Participant = { discordId: string; displayName: string; joinedAt: string };
 
 function parseParticipants(raw: string): Participant[] {
-  try { return JSON.parse(raw); } catch { return []; }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
 }
 
 /** POST /api/bot/inscription/[id]/leave — remove a Discord user from the participant list */
@@ -33,7 +37,8 @@ export async function POST(
   }
 
   const body = await request.json().catch(() => null);
-  const discordId = typeof body?.discordId === "string" ? body.discordId.trim() : null;
+  const discordId =
+    typeof body?.discordId === "string" ? body.discordId.trim() : null;
   if (!discordId) {
     return Response.json({ error: "discordId is required" }, { status: 400 });
   }
@@ -43,13 +48,17 @@ export async function POST(
     .from(inscriptions)
     .where(eq(inscriptions.id, inscriptionId));
 
-  if (!inscription) return Response.json({ error: "Not found" }, { status: 404 });
+  if (!inscription)
+    return Response.json({ error: "Not found" }, { status: 404 });
 
   const participants = parseParticipants(inscription.participants);
   const next = participants.filter((p) => p.discordId !== discordId);
 
   if (next.length === participants.length) {
-    return Response.json({ error: "not_joined", participants }, { status: 409 });
+    return Response.json(
+      { error: "not_joined", participants },
+      { status: 409 },
+    );
   }
 
   await db

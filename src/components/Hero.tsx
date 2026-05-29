@@ -132,7 +132,9 @@ export function HeroCommand({ accent, impostorMode, user }: HeroProps) {
             className="dot"
             style={{ background: impostorMode ? "var(--impostor-500)" : ac }}
           />
-          {impostorMode ? "Impostor detectado" : "Estação ativa · Região BR-SUL"}
+          {impostorMode
+            ? "Impostor detectado"
+            : "Estação ativa · Região BR-SUL"}
         </div>
 
         {/* Title */}

@@ -27,8 +27,10 @@ export default async function AlistarPage() {
     .where(eq(applications.userId, user.id))
     .limit(1);
 
-  if (existing?.status === "approved") redirect("/alistar/status?s=already_approved");
-  if (existing?.status === "pending") redirect("/alistar/status?s=already_pending");
+  if (existing?.status === "approved")
+    redirect("/alistar/status?s=already_approved");
+  if (existing?.status === "pending")
+    redirect("/alistar/status?s=already_pending");
 
   return (
     <>
@@ -57,7 +59,10 @@ export default async function AlistarPage() {
                 color: "var(--signal-500)",
               }}
             >
-              <span className="dot" style={{ background: "var(--signal-500)" }} />
+              <span
+                className="dot"
+                style={{ background: "var(--signal-500)" }}
+              />
               <span>Recrutamento aberto</span>
             </div>
 
@@ -82,8 +87,9 @@ export default async function AlistarPage() {
                 maxWidth: "60ch",
               }}
             >
-              Preencha o formulário abaixo para solicitar sua entrada no Packet Loss. Nossa
-              liderança analisará sua candidatura e retornará em até 72 horas.
+              Preencha o formulário abaixo para solicitar sua entrada no Packet
+              Loss. Nossa liderança analisará sua candidatura e retornará em até
+              72 horas.
             </p>
           </div>
 
@@ -131,7 +137,11 @@ export default async function AlistarPage() {
                 {user.username}
               </p>
             </div>
-            <form action="/auth/logout" method="POST" style={{ marginLeft: "auto" }}>
+            <form
+              action="/auth/logout"
+              method="POST"
+              style={{ marginLeft: "auto" }}
+            >
               <button
                 type="submit"
                 style={{

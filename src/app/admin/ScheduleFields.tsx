@@ -105,7 +105,8 @@ export function ScheduleFields({
   };
 
   const addDate = () => setDates((d) => [...d, ""]);
-  const removeDate = (i: number) => setDates((d) => d.filter((_, j) => j !== i));
+  const removeDate = (i: number) =>
+    setDates((d) => d.filter((_, j) => j !== i));
   const updateDate = (i: number, val: string) =>
     setDates((d) => d.map((v, j) => (j === i ? val : v)));
 
@@ -115,7 +116,9 @@ export function ScheduleFields({
   return (
     <div>
       <div style={fieldStyle}>
-        <label style={labelStyle} htmlFor="scheduleType">Tipo de periodicidade</label>
+        <label style={labelStyle} htmlFor="scheduleType">
+          Tipo de periodicidade
+        </label>
         <select
           id="scheduleType"
           name="scheduleType"
@@ -133,7 +136,9 @@ export function ScheduleFields({
 
       {(type === "minutes" || type === "hours" || type === "days") && (
         <div style={fieldStyle}>
-          <label style={labelStyle} htmlFor="scheduleInterval">Intervalo ({intervalLabel})</label>
+          <label style={labelStyle} htmlFor="scheduleInterval">
+            Intervalo ({intervalLabel})
+          </label>
           <input
             id="scheduleInterval"
             name="scheduleInterval"
@@ -149,7 +154,9 @@ export function ScheduleFields({
 
       {type === "once" && (
         <div style={fieldStyle}>
-          <label style={labelStyle} htmlFor="scheduleTime-once">Data e hora (única)</label>
+          <label style={labelStyle} htmlFor="scheduleTime-once">
+            Data e hora (única)
+          </label>
           <input
             id="scheduleTime-once"
             name="scheduleTime"
@@ -162,7 +169,9 @@ export function ScheduleFields({
 
       {type === "daily_time" && (
         <div style={fieldStyle}>
-          <label style={labelStyle} htmlFor="scheduleTime-daily">Horário diário</label>
+          <label style={labelStyle} htmlFor="scheduleTime-daily">
+            Horário diário
+          </label>
           <input
             id="scheduleTime-daily"
             name="scheduleTime"
@@ -181,7 +190,10 @@ export function ScheduleFields({
           </label>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {dates.map((d, i) => (
-              <div key={d + String(i)} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <div
+                key={d + String(i)}
+                style={{ display: "flex", gap: 8, alignItems: "center" }}
+              >
                 <input
                   id={i === 0 ? "scheduleDates-0" : undefined}
                   type="datetime-local"
@@ -189,7 +201,11 @@ export function ScheduleFields({
                   onChange={(e) => updateDate(i, e.target.value)}
                   style={{ ...inputStyle, flex: 1 }}
                 />
-                <button type="button" onClick={() => removeDate(i)} style={btnRemove}>
+                <button
+                  type="button"
+                  onClick={() => removeDate(i)}
+                  style={btnRemove}
+                >
                   ×
                 </button>
               </div>
