@@ -16,13 +16,9 @@ interface SiteHeaderProps {
 }
 
 const NAV_ITEMS: { href: string; label: string }[] = [
-<<<<<<< HEAD
   { href: "/#about", label: "Sobre" },
   { href: "/rankeada", label: "Rankeada" },
-=======
-  { href: "/", label: "Sobre" },
   { href: "https://loja.packetloss.com.br", label: "Loja" },
->>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
   { href: "https://packetloss.com.br/discord", label: "Servidor" },
 ];
 
@@ -106,21 +102,6 @@ function Logo({ size = 36 }: { size?: number }) {
   );
 }
 
-<<<<<<< HEAD
-interface UserInfo {
-  username: string;
-  avatarUrl: string | null;
-  role: string;
-}
-
-interface SiteHeaderProps {
-  active?: string;
-  accentColor?: string;
-  user?: UserInfo | null;
-}
-
-=======
->>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
 export function SiteHeader({ active, accentColor, user }: SiteHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -401,39 +382,10 @@ export function SiteHeader({ active, accentColor, user }: SiteHeaderProps) {
                   transition: "border-color .15s, color .15s",
                 }}
               >
-<<<<<<< HEAD
-                {user.avatarUrl && (
-                  <Image
-                    src={user.avatarUrl}
-                    alt={user.username}
-                    width={24}
-                    height={24}
-                    style={{ borderRadius: "50%" }}
-                  />
-                )}
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 11,
-                    color: "var(--hull-200)",
-                    maxWidth: 120,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {user.username}
-                </span>
-                <span style={{ color: "var(--hull-400)", fontSize: 10 }}>
-                  ▾
-                </span>
-              </button>
-=======
                 Entrar
               </a>
             )}
           </div>
->>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
 
           {/* Hamburger — mobile only */}
           <button
@@ -524,15 +476,6 @@ export function SiteHeader({ active, accentColor, user }: SiteHeaderProps) {
                           : "Membro"}
                     </div>
                     <div
-<<<<<<< HEAD
-                      style={{
-                        fontSize: 13,
-                        color: "var(--hull-100)",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {user.username}
-=======
                       style={{ display: "flex", alignItems: "center", gap: 8 }}
                     >
                       {user.avatarUrl && (
@@ -553,7 +496,6 @@ export function SiteHeader({ active, accentColor, user }: SiteHeaderProps) {
                       >
                         {user.username}
                       </span>
->>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
                     </div>
                   </div>
                   {(user.role === "admin" || user.role === "super_admin") && (
@@ -590,37 +532,6 @@ export function SiteHeader({ active, accentColor, user }: SiteHeaderProps) {
                   >
                     ◆ Minha candidatura
                   </a>
-<<<<<<< HEAD
-
-                  <div
-                    style={{
-                      borderTop: "1px solid var(--void-300)",
-                      marginTop: 4,
-                      paddingTop: 4,
-                    }}
-                  >
-                    <form action="/auth/logout" method="POST">
-                      <button
-                        type="submit"
-                        style={{
-                          display: "block",
-                          width: "100%",
-                          padding: "8px 14px",
-                          textAlign: "left",
-                          fontSize: 12,
-                          color: "var(--impostor-300)",
-                          fontFamily: "var(--font-mono)",
-                          letterSpacing: ".06em",
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
-                      >
-                        ✕ Sair
-                      </button>
-                    </form>
-                  </div>
-=======
                   <form action="/auth/logout" method="POST">
                     <button
                       type="submit"
@@ -638,7 +549,6 @@ export function SiteHeader({ active, accentColor, user }: SiteHeaderProps) {
                       ✕ Sair
                     </button>
                   </form>
->>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
                 </div>
               ) : (
                 <a

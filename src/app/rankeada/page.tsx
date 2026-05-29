@@ -51,10 +51,7 @@ export const metadata = {
 export default async function RankeadaPage() {
   const [user, allInscriptions] = await Promise.all([
     getCurrentUser(),
-    db
-      .select()
-      .from(inscriptions)
-      .orderBy(desc(inscriptions.createdAt)),
+    db.select().from(inscriptions).orderBy(desc(inscriptions.createdAt)),
   ]);
 
   const now = new Date();
@@ -138,18 +135,19 @@ export default async function RankeadaPage() {
                 Nenhuma partida agendada no momento.
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: 16 }}
+              >
                 {upcoming.map((insc) => {
                   const status = inscriptionStatus(insc, now);
                   const participants = parseParticipants(insc.participants);
                   const announcementOffset = insc.announcementHoursBefore ?? 2;
-                  const announcementAt =
-                    insc.expiresAt
-                      ? new Date(
-                          insc.expiresAt.getTime() -
-                            announcementOffset * 60 * 60 * 1000,
-                        )
-                      : null;
+                  const announcementAt = insc.expiresAt
+                    ? new Date(
+                        insc.expiresAt.getTime() -
+                          announcementOffset * 60 * 60 * 1000,
+                      )
+                    : null;
 
                   const statusColor =
                     {
@@ -416,7 +414,9 @@ export default async function RankeadaPage() {
                 Partidas encerradas ({past.length})
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: 10 }}
+              >
                 {past.map((insc) => {
                   const participants = parseParticipants(insc.participants);
                   const countStr = insc.maxParticipants
@@ -456,8 +456,7 @@ export default async function RankeadaPage() {
                             marginTop: 2,
                           }}
                         >
-                          {fmtBRT(insc.expiresAt)} ·{" "}
-                          {countStr} inscrito
+                          {fmtBRT(insc.expiresAt)} · {countStr} inscrito
                           {participants.length !== 1 ? "s" : ""}
                         </div>
                       </div>
