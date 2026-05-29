@@ -217,7 +217,7 @@ export async function createInscription(formData: FormData) {
   // Parse startsAt as Brasília time (BRT = UTC-3)
   const startsAtRaw = formData.get("startsAt");
   const startsAt = startsAtRaw
-    ? new Date(String(startsAtRaw) + ":00-03:00")
+    ? new Date(`${String(startsAtRaw)}:00-03:00`)
     : null;
 
   // Compute expiresAt from duration dropdown (hours after startsAt)
