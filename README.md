@@ -80,6 +80,20 @@ pnpm start
 
 Abra `http://localhost:3000` e clique em **Entrar com Discord**.
 
+## Deploy com Ansible
+
+O playbook `ansible/deploy.yml` faz o deploy para o servidor de produção: atualiza o código via git, copia as configs do Nginx e do systemd e executa o script `scripts/deploy.sh`.
+
+**Pré-requisito**: Ansible instalado localmente e acesso SSH ao host `ananke` configurado em `~/.ssh/config`.
+
+```bash
+# Deploy na branch padrão (main)
+ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
+
+# Deploy em outra branch
+ansible-playbook -i ansible/inventory.ini ansible/deploy.yml -e git_branch=minha-branch
+```
+
 ## Painel de administração
 
 Acesse `/admin` após fazer login com uma conta com role `admin` ou `super_admin`.

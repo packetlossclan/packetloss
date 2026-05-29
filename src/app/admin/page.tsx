@@ -24,6 +24,7 @@ import {
   deleteInscription,
 } from "./actions";
 import { ScheduleFields } from "./ScheduleFields";
+import { AdminSidebar } from "./AdminSidebar";
 
 function fmt(d: Date | null | undefined) {
   if (!d) return "—";
@@ -276,7 +277,29 @@ export default async function AdminPage({
     cursor: "pointer",
   };
 
+  const navItems = [
+    {
+      key: "candidaturas",
+      label: "Candidaturas",
+      badge: pendingCount > 0 ? pendingCount : null,
+    },
+    ...(isSuperAdmin
+      ? [{ key: "usuarios", label: "Usuários", badge: null as number | null }]
+      : []),
+    {
+      key: "anuncios",
+      label: "Anúncios",
+      badge: allAds.length > 0 ? allAds.length : null,
+    },
+    {
+      key: "inscricao",
+      label: "Inscrição",
+      badge: activeInscriptionCount > 0 ? activeInscriptionCount : null,
+    },
+  ] as { key: string; label: string; badge: number | null }[];
+
   return (
+<<<<<<< HEAD
     <div
       style={{
         minHeight: "100vh",
@@ -469,6 +492,19 @@ export default async function AdminPage({
 
       {/* ─── Main ───────────────────────────────────────────────────────────── */}
       <main style={{ flex: 1, padding: "36px 40px", minWidth: 0 }}>
+=======
+    <div className="admin-layout">
+      {/* ─── Sidebar ────────────────────────────────────────────────────────── */}
+      <AdminSidebar
+        activeSection={activeSection}
+        navItems={navItems}
+        roleLabel={ROLE_LABELS[currentUser.role]}
+        currentUser={{ username: currentUser.username, role: currentUser.role }}
+      />
+
+      {/* ─── Main ───────────────────────────────────────────────────────────── */}
+      <main className="admin-main">
+>>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
         {/* ══ CANDIDATURAS ══════════════════════════════════════════════════════ */}
         {activeSection === "candidaturas" && (
           <section>
@@ -907,6 +943,7 @@ export default async function AdminPage({
                 overflow: "hidden",
               }}
             >
+<<<<<<< HEAD
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr>
@@ -1004,10 +1041,113 @@ export default async function AdminPage({
                             </form>
                           )}
                       </td>
+=======
+              <div className="admin-table-wrap">
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr>
+                      <th style={thStyle}>ID</th>
+                      <th style={thStyle}>Usuário</th>
+                      <th style={thStyle}>Discord ID</th>
+                      <th style={thStyle}>E-mail</th>
+                      <th style={thStyle}>Cargo</th>
+                      <th style={thStyle}>Cadastro</th>
+                      <th style={thStyle}>Ação</th>
+>>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {allUsers.map((u) => (
+                      <tr key={u.id}>
+                        <td
+                          style={{
+                            ...tdStyle,
+                            color: "var(--hull-400)",
+                            fontSize: 11,
+                          }}
+                        >
+                          #{u.id}
+                        </td>
+                        <td style={{ ...tdStyle, fontWeight: 500 }}>
+                          {u.username}
+                        </td>
+                        <td
+                          style={{
+                            ...tdStyle,
+                            color: "var(--hull-400)",
+                            fontSize: 11,
+                          }}
+                        >
+                          {u.discordId}
+                        </td>
+                        <td
+                          style={{
+                            ...tdStyle,
+                            color: "var(--hull-300)",
+                            fontSize: 12,
+                          }}
+                        >
+                          {u.email ?? "—"}
+                        </td>
+                        <td style={tdStyle}>
+                          <span
+                            style={{
+                              color: ROLE_COLORS[u.role],
+                              fontWeight: u.role !== "user" ? 700 : 400,
+                            }}
+                          >
+                            {ROLE_LABELS[u.role]}
+                          </span>
+                        </td>
+                        <td
+                          style={{
+                            ...tdStyle,
+                            color: "var(--hull-400)",
+                            fontSize: 11,
+                          }}
+                        >
+                          {fmt(u.createdAt)}
+                        </td>
+                        <td style={tdStyle}>
+                          {u.id !== currentUser.id &&
+                            u.role !== "super_admin" && (
+                              <form
+                                action={async (fd: FormData) => {
+                                  "use server";
+                                  const role = fd.get("role") as
+                                    | "user"
+                                    | "admin";
+                                  await updateUserRole(u.id, role);
+                                }}
+                                style={{
+                                  display: "flex",
+                                  gap: 8,
+                                  alignItems: "center",
+                                }}
+                              >
+                                <select
+                                  name="role"
+                                  defaultValue={u.role}
+                                  style={{
+                                    ...inputStyle,
+                                    width: "auto",
+                                    padding: "4px 8px",
+                                  }}
+                                >
+                                  <option value="user">Usuário</option>
+                                  <option value="admin">Admin</option>
+                                </select>
+                                <button type="submit" style={btnSecondary}>
+                                  Salvar
+                                </button>
+                              </form>
+                            )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </section>
         )}
@@ -1083,6 +1223,7 @@ export default async function AdminPage({
                     style={inputStyle}
                   />
                 </div>
+<<<<<<< HEAD
                 <div
                   style={{
                     display: "grid",
@@ -1091,6 +1232,9 @@ export default async function AdminPage({
                     marginBottom: 16,
                   }}
                 >
+=======
+                <div className="admin-grid-2">
+>>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
                   <div style={fieldStyle}>
                     <label style={labelStyle} htmlFor="startsAt">
                       Válido a partir de (opcional)
@@ -1152,6 +1296,7 @@ export default async function AdminPage({
                   Nenhuma mensagem cadastrada. Adicione a primeira acima.
                 </div>
               ) : (
+<<<<<<< HEAD
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
                     <tr>
@@ -1373,10 +1518,232 @@ export default async function AdminPage({
                             </form>
                           </div>
                         </td>
+=======
+                <div className="admin-table-wrap">
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr>
+                        <th style={thStyle}>Título / Mensagem</th>
+                        <th style={thStyle}>Intervalo</th>
+                        <th style={thStyle}>Inicia</th>
+                        <th style={thStyle}>Expira</th>
+                        <th style={thStyle}>Último envio</th>
+                        <th style={thStyle}>Status</th>
+                        <th style={thStyle}>Ações</th>
+>>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {allAds.map((ad) => (
+                        <tr key={ad.id}>
+                          <td style={{ ...tdStyle, maxWidth: 320 }}>
+                            <details>
+                              <summary
+                                style={{
+                                  cursor: "pointer",
+                                  fontWeight: 600,
+                                  color: "var(--hull-100)",
+                                }}
+                              >
+                                {ad.title}
+                              </summary>
+                              <pre
+                                style={{
+                                  marginTop: 8,
+                                  background: "rgba(0,0,0,0.3)",
+                                  padding: 10,
+                                  borderRadius: 4,
+                                  fontSize: 12,
+                                  whiteSpace: "pre-wrap",
+                                  color: "var(--hull-200)",
+                                  maxWidth: 400,
+                                }}
+                              >
+                                {ad.message}
+                              </pre>
+                              <form
+                                action={async (fd: FormData) => {
+                                  "use server";
+                                  await updateAd(ad.id, fd);
+                                }}
+                                style={{ marginTop: 16 }}
+                              >
+                                <div style={fieldStyle}>
+                                  <label
+                                    htmlFor={`t-${ad.id}`}
+                                    style={labelStyle}
+                                  >
+                                    Título
+                                  </label>
+                                  <input
+                                    id={`t-${ad.id}`}
+                                    name="title"
+                                    defaultValue={ad.title}
+                                    required
+                                    style={inputStyle}
+                                  />
+                                </div>
+                                <div style={fieldStyle}>
+                                  <label
+                                    htmlFor={`m-${ad.id}`}
+                                    style={labelStyle}
+                                  >
+                                    Mensagem
+                                  </label>
+                                  <textarea
+                                    id={`m-${ad.id}`}
+                                    name="message"
+                                    defaultValue={ad.message}
+                                    required
+                                    style={textareaStyle}
+                                  />
+                                </div>
+                                <ScheduleFields
+                                  defaultType={
+                                    ad.scheduleType as import("./ScheduleFields").ScheduleType
+                                  }
+                                  defaultInterval={ad.scheduleInterval}
+                                  defaultTime={ad.scheduleTime}
+                                  defaultDates={ad.scheduleDates}
+                                />
+                                <div style={fieldStyle}>
+                                  <label
+                                    htmlFor={`ch-${ad.id}`}
+                                    style={labelStyle}
+                                  >
+                                    Canal do Discord (ID, opcional)
+                                  </label>
+                                  <input
+                                    id={`ch-${ad.id}`}
+                                    name="channelId"
+                                    defaultValue={ad.channelId ?? ""}
+                                    placeholder="Padrão: ADVERTISEMENT_CHANNEL_ID"
+                                    style={inputStyle}
+                                  />
+                                </div>
+                                <div className="admin-grid-2">
+                                  <div>
+                                    <label
+                                      htmlFor={`s-${ad.id}`}
+                                      style={labelStyle}
+                                    >
+                                      Inicia
+                                    </label>
+                                    <input
+                                      id={`s-${ad.id}`}
+                                      name="startsAt"
+                                      type="datetime-local"
+                                      defaultValue={toInputDatetime(
+                                        ad.startsAt,
+                                      )}
+                                      style={inputStyle}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label
+                                      htmlFor={`e-${ad.id}`}
+                                      style={labelStyle}
+                                    >
+                                      Expira
+                                    </label>
+                                    <input
+                                      id={`e-${ad.id}`}
+                                      name="expiresAt"
+                                      type="datetime-local"
+                                      defaultValue={toInputDatetime(
+                                        ad.expiresAt,
+                                      )}
+                                      style={inputStyle}
+                                    />
+                                  </div>
+                                </div>
+                                <button type="submit" style={btnSecondary}>
+                                  Salvar alterações
+                                </button>
+                              </form>
+                            </details>
+                          </td>
+                          <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
+                            {fmtSchedule(ad)}
+                          </td>
+                          <td
+                            style={{
+                              ...tdStyle,
+                              fontSize: 12,
+                              color: "var(--hull-300)",
+                            }}
+                          >
+                            {fmt(ad.startsAt)}
+                          </td>
+                          <td
+                            style={{
+                              ...tdStyle,
+                              fontSize: 12,
+                              color: "var(--hull-300)",
+                            }}
+                          >
+                            {fmt(ad.expiresAt)}
+                          </td>
+                          <td
+                            style={{
+                              ...tdStyle,
+                              fontSize: 12,
+                              color: "var(--hull-300)",
+                            }}
+                          >
+                            {fmt(ad.lastPostedAt)}
+                          </td>
+                          <td style={tdStyle}>
+                            <span
+                              style={{
+                                display: "inline-block",
+                                padding: "2px 8px",
+                                borderRadius: 3,
+                                fontSize: 10,
+                                fontWeight: 700,
+                                letterSpacing: ".08em",
+                                textTransform: "uppercase",
+                                background: ad.enabled
+                                  ? "rgba(0,229,199,0.12)"
+                                  : "rgba(255,255,255,0.05)",
+                                color: ad.enabled
+                                  ? "var(--signal-300)"
+                                  : "var(--hull-400)",
+                                border: `1px solid ${ad.enabled ? "var(--signal-700)" : "var(--void-400)"}`,
+                              }}
+                            >
+                              {ad.enabled ? "Ativa" : "Pausada"}
+                            </span>
+                          </td>
+                          <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
+                            <div style={{ display: "flex", gap: 6 }}>
+                              <form
+                                action={async () => {
+                                  "use server";
+                                  await toggleAd(ad.id, !ad.enabled);
+                                }}
+                              >
+                                <button type="submit" style={btnSecondary}>
+                                  {ad.enabled ? "Pausar" : "Ativar"}
+                                </button>
+                              </form>
+                              <form
+                                action={async () => {
+                                  "use server";
+                                  await deleteAd(ad.id);
+                                }}
+                              >
+                                <button type="submit" style={btnDanger}>
+                                  Excluir
+                                </button>
+                              </form>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           </section>
@@ -1431,7 +1798,11 @@ export default async function AdminPage({
                     id="insc-title"
                     name="title"
                     required
+<<<<<<< HEAD
                     placeholder="Ex: Rankeada #5"
+=======
+                    placeholder="Ex: Inscrição para o Torneio #5"
+>>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
                     style={inputStyle}
                   />
                 </div>
@@ -1446,6 +1817,7 @@ export default async function AdminPage({
                     placeholder="Texto exibido na mensagem do Discord"
                   />
                 </div>
+<<<<<<< HEAD
                 <div
                   style={{
                     display: "grid",
@@ -1454,6 +1826,9 @@ export default async function AdminPage({
                     marginBottom: 16,
                   }}
                 >
+=======
+                <div className="admin-grid-2">
+>>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
                   <div style={fieldStyle}>
                     <label style={labelStyle} htmlFor="insc-channel">
                       Canal do Discord (ID)
@@ -1478,6 +1853,7 @@ export default async function AdminPage({
                     />
                   </div>
                 </div>
+<<<<<<< HEAD
                 <div
                   style={{
                     display: "grid",
@@ -1489,17 +1865,27 @@ export default async function AdminPage({
                   <div style={fieldStyle}>
                     <label style={labelStyle} htmlFor="insc-starts">
                       Abertura — horário de Brasília
+=======
+                <div className="admin-grid-2">
+                  <div style={fieldStyle}>
+                    <label style={labelStyle} htmlFor="insc-starts">
+                      Abertura (opcional)
+>>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
                     </label>
                     <input
                       id="insc-starts"
                       name="startsAt"
                       type="datetime-local"
+<<<<<<< HEAD
                       defaultValue={defaultStartsAt}
                       required
+=======
+>>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
                       style={inputStyle}
                     />
                   </div>
                   <div style={fieldStyle}>
+<<<<<<< HEAD
                     <label style={labelStyle} htmlFor="insc-duration">
                       Duração da inscrição
                     </label>
@@ -1526,6 +1912,15 @@ export default async function AdminPage({
                       min="1"
                       max="12"
                       defaultValue={2}
+=======
+                    <label style={labelStyle} htmlFor="insc-expires">
+                      Encerramento (opcional)
+                    </label>
+                    <input
+                      id="insc-expires"
+                      name="expiresAt"
+                      type="datetime-local"
+>>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
                       style={inputStyle}
                     />
                   </div>

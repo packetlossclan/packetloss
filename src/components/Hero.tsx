@@ -101,7 +101,7 @@ export function HeroCommand({ accent, impostorMode, user }: HeroProps) {
           top: "15%",
           left: "50%",
           transform: "translateX(-50%)",
-          width: 700,
+          width: "min(700px, 140vw)",
           height: 500,
           background: impostorMode
             ? "radial-gradient(ellipse, rgba(255,46,77,0.1) 0%, transparent 65%)"
@@ -132,9 +132,13 @@ export function HeroCommand({ accent, impostorMode, user }: HeroProps) {
             className="dot"
             style={{ background: impostorMode ? "var(--impostor-500)" : ac }}
           />
+<<<<<<< HEAD
           {impostorMode
             ? "Impostor detectado"
             : "Estação ativa · Região BR-SUL"}
+=======
+          {impostorMode ? "Impostor detectado" : "Estação ativa · Brasil"}
+>>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
         </div>
 
         {/* Title */}

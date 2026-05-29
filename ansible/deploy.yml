@@ -1,0 +1,36 @@
+---
+- name: Deploy packetloss
+  hosts: packetloss
+
+  tasks:
+    - name: Copiar configuração do Nginx
+      ansible.builtin.copy:
+        src: files/09-packetloss.com.br.conf
+        dest: /etc/nginx/sites.d/09-packetloss.com.br.conf
+        owner: root
+        group: root
+        mode: "0644"
+      become: true
+      notify: Recarregar Nginx
+
+    - name: Copiar unit do systemd
+      ansible.builtin.copy:
+        src: "files/packetloss.service"
+        dest: /etc/systemd/system/packetloss.service
+        owner: root
+        group: root
+        mode: "0644"
+      become: true
+      notify: Recarregar systemd
+
+  handlers:
+    - name: Recarregar Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+      become: true
+
+    - name: Recarregar systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+      become: true

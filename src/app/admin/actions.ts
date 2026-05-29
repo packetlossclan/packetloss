@@ -213,8 +213,11 @@ export async function createInscription(formData: FormData) {
   const maxParticipants = maxParticipantsRaw
     ? Number(maxParticipantsRaw)
     : null;
+<<<<<<< HEAD
 
   // Parse startsAt as Brasília time (BRT = UTC-3)
+=======
+>>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
   const startsAtRaw = formData.get("startsAt");
   const startsAt = startsAtRaw
     ? new Date(String(startsAtRaw) + ":00-03:00")
@@ -239,9 +242,14 @@ export async function createInscription(formData: FormData) {
     channelId,
     maxParticipants:
       maxParticipants && maxParticipants > 0 ? maxParticipants : null,
+<<<<<<< HEAD
     startsAt,
     expiresAt,
     announcementHoursBefore,
+=======
+    startsAt: startsAtRaw ? new Date(String(startsAtRaw)) : null,
+    expiresAt: expiresAtRaw ? new Date(String(expiresAtRaw)) : null,
+>>>>>>> d32099fa56b88e91dd80ea4b775c6d61492cd9cd
     createdBy: actor.id,
   });
 
