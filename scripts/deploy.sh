@@ -8,10 +8,13 @@ PATH=$PATH:/home/nginx/.local/share/pnpm
 
 echo "📦 Preparando ambiente de deploy..."
 
+echo "🔍 pnpm $(pnpm --version 2>/dev/null || echo 'não encontrado')"
 PNPM_MAJOR=$(pnpm --version 2>/dev/null | cut -d. -f1)
 if [ "${PNPM_MAJOR:-0}" -lt 11 ]; then
   echo "🔄 Atualizando pnpm para v11..."
   curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=11 PNPM_HOME=/home/nginx/.local/share/pnpm sh -
+  hash -r 2>/dev/null || true
+  echo "🔍 pnpm atualizado para $(pnpm --version 2>/dev/null)"
 fi
 
 [ -e $TMPDIR ] && rm -rf $TMPDIR

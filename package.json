@@ -21,6 +21,9 @@
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "sharp", "unrs-resolver"]
+  },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
     "@tailwindcss/postcss": "^4",
