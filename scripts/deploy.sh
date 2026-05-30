@@ -25,12 +25,10 @@ git clean -fxd -e .env -e drizzle/packetloss.db
 cp .env .env.production
 
 echo "📥 Instalando dependências..."
-if ! pnpm install --frozen-lockfile --ignore-scripts; then
+if ! pnpm install --frozen-lockfile; then
   echo "⚠️ Falha ao instalar dependências. Abortando o deploy..."
   exit 1
 fi
-echo "🔨 Compilando pacotes nativos (esbuild, sharp)..."
-pnpm rebuild 2>&1 || true
 
 echo "🗃️ Sincronizando banco de dados..."
 if ! pnpm run push; then
