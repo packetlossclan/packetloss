@@ -4,7 +4,7 @@ NAME="packetloss"
 TMPDIR="/tmp/$NAME"
 WORKDIR="/var/www/$NAME"
 SERVICE="$NAME.service"
-PATH=$PATH:/home/nginx/.local/share/pnpm
+PATH=/home/nginx/.local/share/pnpm:$PATH
 
 echo "📦 Preparando ambiente de deploy..."
 
