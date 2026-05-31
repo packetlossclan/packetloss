@@ -294,6 +294,16 @@ export default async function AdminPage({
 
   const navItems = [
     {
+      key: "inscricao",
+      label: "Rankeada",
+      badge: activeInscriptionCount > 0 ? activeInscriptionCount : null,
+    },
+    {
+      key: "partidas",
+      label: "Partidas",
+      badge: allMatches.length > 0 ? allMatches.length : null,
+    },
+    {
       key: "candidaturas",
       label: "Candidaturas",
       badge: pendingCount > 0 ? pendingCount : null,
@@ -305,16 +315,6 @@ export default async function AdminPage({
       key: "anuncios",
       label: "Anúncios",
       badge: allAds.length > 0 ? allAds.length : null,
-    },
-    {
-      key: "inscricao",
-      label: "Inscrição",
-      badge: activeInscriptionCount > 0 ? activeInscriptionCount : null,
-    },
-    {
-      key: "partidas",
-      label: "Partidas",
-      badge: allMatches.length > 0 ? allMatches.length : null,
     },
   ] as { key: string; label: string; badge: number | null }[];
 
@@ -1238,7 +1238,7 @@ export default async function AdminPage({
             </div>
           </section>
         )}
-        {/* ══ INSCRIÇÃO ══════════════════════════════════════════════════════════ */}
+        {/* ══ RANKEADA ════════════════════════════════════════════════════════════ */}
         {activeSection === "inscricao" && (
           <section>
             <div style={{ marginBottom: 28 }}>
@@ -1251,7 +1251,7 @@ export default async function AdminPage({
                   marginBottom: 4,
                 }}
               >
-                Inscrição
+                Rankeada
               </h1>
               <p style={{ fontSize: 12, color: "var(--hull-400)" }}>
                 Lista de inscrições gerenciadas pelo bot no Discord
