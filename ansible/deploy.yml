@@ -13,7 +13,7 @@
       become: true
       notify: Recarregar Nginx
 
-    - name: Copiar unit do systemd
+    - name: Copiar unit do systemd (app)
       ansible.builtin.copy:
         src: "files/packetloss.service"
         dest: /etc/systemd/system/packetloss.service
@@ -22,6 +22,34 @@
         mode: "0644"
       become: true
       notify: Recarregar systemd
+
+    - name: Copiar unit do systemd (ranked service)
+      ansible.builtin.copy:
+        src: "files/packetloss-ranked.service"
+        dest: /etc/systemd/system/packetloss-ranked.service
+        owner: root
+        group: root
+        mode: "0644"
+      become: true
+      notify: Recarregar systemd
+
+    - name: Copiar unit do systemd (ranked timer)
+      ansible.builtin.copy:
+        src: "files/packetloss-ranked.timer"
+        dest: /etc/systemd/system/packetloss-ranked.timer
+        owner: root
+        group: root
+        mode: "0644"
+      become: true
+      notify: Recarregar systemd
+
+    - name: Habilitar e iniciar timer rankeada
+      ansible.builtin.systemd:
+        name: packetloss-ranked.timer
+        enabled: true
+        state: started
+        daemon_reload: true
+      become: true
 
   handlers:
     - name: Recarregar Nginx

@@ -1,0 +1,10 @@
+[Unit]
+Description=PacketLoss — Timer rankeada (20:29 BRT = 23:29 UTC)
+Requires=packetloss-ranked.service
+
+[Timer]
+OnCalendar=*-*-* 23:29:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target
