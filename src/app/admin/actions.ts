@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, max } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import {
@@ -12,6 +12,23 @@ import {
   lobbyResults,
 } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
+
+const MATCHES_PER_SEASON = 28;
+const INITIAL_OFFSET = 33; // próxima criada = 34 = T2P6
+
+export function rankedTitle(n: number): string {
+  const season = Math.ceil(n / MATCHES_PER_SEASON);
+  const match = ((n - 1) % MATCHES_PER_SEASON) + 1;
+  return `Rankeada #${match} Temporada: ${season}`;
+}
+
+async function nextRankedNumber(): Promise<number> {
+  const row = await db
+    .select({ last: max(inscriptions.rankedNumber) })
+    .from(inscriptions)
+    .get();
+  return (row?.last ?? INITIAL_OFFSET) + 1;
+}
 
 async function requireAdmin() {
   const user = await getCurrentUser();
@@ -211,9 +228,6 @@ export async function deleteApplication(appId: number) {
 export async function createInscription(formData: FormData) {
   const actor = await requireAdmin();
 
-  const title = String(formData.get("title") ?? "").trim();
-  if (!title) throw new Error("Título é obrigatório");
-
   const description = String(formData.get("description") ?? "").trim() || null;
   const channelId = String(formData.get("channelId") ?? "").trim() || null;
   const maxParticipantsRaw = formData.get("maxParticipants");
@@ -227,28 +241,16 @@ export async function createInscription(formData: FormData) {
     ? new Date(`${String(startsAtRaw)}:00-03:00`)
     : null;
 
-  // Compute expiresAt from duration dropdown (hours after startsAt)
-  const durationHoursRaw = formData.get("durationHours");
-  const durationHours = durationHoursRaw ? Number(durationHoursRaw) : null;
-  let expiresAt: Date | null = null;
-  if (startsAt && durationHours && durationHours > 0) {
-    expiresAt = new Date(startsAt.getTime() + durationHours * 60 * 60 * 1000);
-  }
-
-  const announcementHoursBeforeRaw = formData.get("announcementHoursBefore");
-  const announcementHoursBefore = announcementHoursBeforeRaw
-    ? Math.max(1, Number(announcementHoursBeforeRaw))
-    : 2;
+  const n = await nextRankedNumber();
 
   await db.insert(inscriptions).values({
-    title,
+    rankedNumber: n,
+    title: rankedTitle(n),
     description,
     channelId,
     maxParticipants:
       maxParticipants && maxParticipants > 0 ? maxParticipants : null,
     startsAt,
-    expiresAt,
-    announcementHoursBefore,
     createdBy: actor.id,
   });
 

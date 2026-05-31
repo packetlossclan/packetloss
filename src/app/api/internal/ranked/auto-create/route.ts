@@ -1,9 +1,11 @@
-import { and, gte, lt } from "drizzle-orm";
+import { and, gte, lt, max } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import { db } from "@/db";
 import { inscriptions } from "@/db/schema";
+import { rankedTitle } from "@/app/admin/actions";
 
 const DEFAULT_CHANNEL_ID = "1497735342005158040";
+const INITIAL_OFFSET = 33;
 
 function authenticate(request: NextRequest): boolean {
   const token = process.env.INTERNAL_API_TOKEN;
@@ -54,22 +56,22 @@ export async function POST(request: NextRequest): Promise<Response> {
   // startsAt: 20:30 BRT = 23:30 UTC
   const startsAt = new Date(Date.UTC(y, mo, d, 23, 30));
 
-  const dateLabel = new Intl.DateTimeFormat("pt-BR", {
-    timeZone: "America/Sao_Paulo",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(now);
+  const row = await db
+    .select({ last: max(inscriptions.rankedNumber) })
+    .from(inscriptions)
+    .get();
+  const n = (row?.last ?? INITIAL_OFFSET) + 1;
 
   const [created] = await db
     .insert(inscriptions)
     .values({
-      title: `Rankeada — ${dateLabel}`,
+      rankedNumber: n,
+      title: rankedTitle(n),
       channelId: DEFAULT_CHANNEL_ID,
       startsAt,
       enabled: true,
     })
     .returning();
 
-  return Response.json({ created: true, id: created.id });
+  return Response.json({ created: true, id: created.id, title: created.title });
 }

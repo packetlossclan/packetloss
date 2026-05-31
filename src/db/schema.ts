@@ -99,6 +99,8 @@ export const applications = sqliteTable("applications", {
 
 export const inscriptions = sqliteTable("inscriptions", {
   id: integer("id").primaryKey({ autoIncrement: true }),
+  /** Número sequencial global. Temporada = ceil(n/28), partida = ((n-1)%28)+1 */
+  rankedNumber: integer("ranked_number"),
   title: text("title").notNull(),
   description: text("description"),
   channelId: text("channel_id"),

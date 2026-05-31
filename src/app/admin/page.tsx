@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { asc, desc } from "drizzle-orm";
+import { asc, desc, max } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/db";
 import {
@@ -24,6 +24,7 @@ import {
   resetInscription,
   deleteInscription,
   startDraft,
+  rankedTitle,
 } from "./actions";
 import { ScheduleFields } from "./ScheduleFields";
 import { AdminSidebar } from "./AdminSidebar";
@@ -132,7 +133,7 @@ export default async function AdminPage({
 
   const isSuperAdmin = currentUser.role === "super_admin";
 
-  const [allUsers, allAds, allApplications, allInscriptions, allMatches] =
+  const [allUsers, allAds, allApplications, allInscriptions, allMatches, lastRanked] =
     await Promise.all([
       isSuperAdmin
         ? db.select().from(users).orderBy(asc(users.createdAt))
@@ -141,7 +142,11 @@ export default async function AdminPage({
       db.select().from(applications).orderBy(desc(applications.createdAt)),
       db.select().from(inscriptions).orderBy(desc(inscriptions.createdAt)),
       db.select().from(matches).orderBy(desc(matches.createdAt)),
+      db.select({ last: max(inscriptions.rankedNumber) }).from(inscriptions).get(),
     ]);
+
+  const nextRankedNum = (lastRanked?.last ?? 33) + 1;
+  const nextRankedTitlePreview = rankedTitle(nextRankedNum);
 
   const draftedInscriptionIds = new Set(
     allMatches.map((m) => m.inscriptionId).filter(Boolean),
@@ -1281,16 +1286,12 @@ export default async function AdminPage({
               </div>
               <form action={createInscription}>
                 <div style={fieldStyle}>
-                  <label style={labelStyle} htmlFor="insc-title">
-                    Título
-                  </label>
-                  <input
-                    id="insc-title"
-                    name="title"
-                    required
-                    placeholder="Ex: Inscrição para o Torneio #5"
-                    style={inputStyle}
-                  />
+                  <div style={{ fontSize: 11, color: "var(--hull-400)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 4 }}>
+                    Próxima partida
+                  </div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "var(--signal-300)", fontFamily: "var(--font-display)" }}>
+                    {nextRankedTitlePreview}
+                  </div>
                 </div>
                 <div style={fieldStyle}>
                   <label style={labelStyle} htmlFor="insc-desc">
