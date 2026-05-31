@@ -1,9 +1,16 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { ads, users, applications, inscriptions } from "@/db/schema";
+import {
+  ads,
+  users,
+  applications,
+  inscriptions,
+  matches,
+  lobbyResults,
+} from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
 
 async function requireAdmin() {
@@ -279,4 +286,134 @@ export async function deleteInscription(id: number) {
   await db.delete(inscriptions).where(eq(inscriptions.id, id));
   revalidatePath("/admin");
   revalidatePath("/rankeada");
+}
+
+// ─── Match / Draft management ─────────────────────────────────────────────────
+
+function parseJson<T>(raw: string, fallback: T): T {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+export async function startDraft(inscriptionId: number) {
+  const actor = await requireAdmin();
+
+  const inscription = await db
+    .select()
+    .from(inscriptions)
+    .where(eq(inscriptions.id, inscriptionId))
+    .get();
+
+  if (!inscription) throw new Error("Inscrição não encontrada");
+
+  const existing = await db
+    .select()
+    .from(matches)
+    .where(
+      and(
+        eq(matches.inscriptionId, inscriptionId),
+        eq(matches.status, "draft"),
+      ),
+    )
+    .get();
+
+  if (existing) throw new Error("Draft já iniciado para esta inscrição");
+
+  type Participant = {
+    discordId: string;
+    displayName: string;
+    joinedAt: string;
+  };
+  const allPlayers = parseJson<Participant[]>(inscription.participants, []);
+
+  const lobbySize = 10;
+  const numLobbies = Math.floor(allPlayers.length / lobbySize);
+  const lobbyList = Array.from({ length: numLobbies }, (_, i) => ({
+    number: i + 1,
+    players: allPlayers.slice(i * lobbySize, (i + 1) * lobbySize),
+  }));
+  const suplentes = allPlayers.slice(numLobbies * lobbySize);
+
+  const [match] = await db
+    .insert(matches)
+    .values({
+      inscriptionId,
+      lobbies: JSON.stringify(lobbyList),
+      suplentes: JSON.stringify(suplentes),
+      channelId: inscription.channelId,
+      status: "draft",
+      createdBy: actor.id,
+    })
+    .returning();
+
+  revalidatePath("/admin");
+  revalidatePath(`/admin/partidas/${match.id}`);
+  return match.id;
+}
+
+export async function submitLobbyScores(
+  matchId: number,
+  lobbyNumber: number,
+  formData: FormData,
+) {
+  const actor = await requireAdmin();
+
+  const match = await db
+    .select()
+    .from(matches)
+    .where(eq(matches.id, matchId))
+    .get();
+
+  if (!match) throw new Error("Partida não encontrada");
+
+  const lobbies = parseJson<
+    { number: number; players: { discordId: string; displayName: string }[] }[]
+  >(match.lobbies, []);
+  const lobby = lobbies.find((l) => l.number === lobbyNumber);
+  if (!lobby) throw new Error("Lobby não encontrado");
+
+  const scores = lobby.players.map((p) => ({
+    discordId: p.discordId,
+    displayName: p.displayName,
+    role: String(formData.get(`role_${p.discordId}`) ?? "crewmate"),
+    outcome: String(formData.get(`outcome_${p.discordId}`) ?? "loss"),
+    points: Number(formData.get(`points_${p.discordId}`) ?? 0),
+  }));
+
+  const existing = await db
+    .select()
+    .from(lobbyResults)
+    .where(
+      and(
+        eq(lobbyResults.matchId, matchId),
+        eq(lobbyResults.lobbyNumber, lobbyNumber),
+      ),
+    )
+    .get();
+
+  if (existing) {
+    await db
+      .update(lobbyResults)
+      .set({
+        scores: JSON.stringify(scores),
+        status: "submitted",
+        submittedBy: actor.id,
+        updatedAt: new Date(),
+      })
+      .where(eq(lobbyResults.id, existing.id));
+  } else {
+    await db.insert(lobbyResults).values({
+      matchId,
+      lobbyNumber,
+      scores: JSON.stringify(scores),
+      status: "submitted",
+      submittedBy: actor.id,
+    });
+  }
+
+  revalidatePath(`/admin/partidas/${matchId}`);
+  revalidatePath("/admin");
 }

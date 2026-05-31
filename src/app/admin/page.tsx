@@ -7,6 +7,7 @@ import {
   users,
   applications,
   inscriptions,
+  matches,
   type Ad,
   type Inscription,
 } from "@/db/schema";
@@ -22,6 +23,7 @@ import {
   toggleInscription,
   resetInscription,
   deleteInscription,
+  startDraft,
 } from "./actions";
 import { ScheduleFields } from "./ScheduleFields";
 import { AdminSidebar } from "./AdminSidebar";
@@ -123,13 +125,14 @@ export default async function AdminPage({
     sec === "usuarios" ||
     sec === "anuncios" ||
     sec === "candidaturas" ||
-    sec === "inscricao"
+    sec === "inscricao" ||
+    sec === "partidas"
       ? sec
       : "candidaturas";
 
   const isSuperAdmin = currentUser.role === "super_admin";
 
-  const [allUsers, allAds, allApplications, allInscriptions] =
+  const [allUsers, allAds, allApplications, allInscriptions, allMatches] =
     await Promise.all([
       isSuperAdmin
         ? db.select().from(users).orderBy(asc(users.createdAt))
@@ -137,7 +140,12 @@ export default async function AdminPage({
       db.select().from(ads).orderBy(asc(ads.createdAt)),
       db.select().from(applications).orderBy(desc(applications.createdAt)),
       db.select().from(inscriptions).orderBy(desc(inscriptions.createdAt)),
+      db.select().from(matches).orderBy(desc(matches.createdAt)),
     ]);
+
+  const draftedInscriptionIds = new Set(
+    allMatches.map((m) => m.inscriptionId).filter(Boolean),
+  );
 
   // Join application user info
   const appUsersRaw = await db
@@ -291,6 +299,11 @@ export default async function AdminPage({
       key: "inscricao",
       label: "Inscrição",
       badge: activeInscriptionCount > 0 ? activeInscriptionCount : null,
+    },
+    {
+      key: "partidas",
+      label: "Partidas",
+      badge: allMatches.length > 0 ? allMatches.length : null,
     },
   ] as { key: string; label: string; badge: number | null }[];
 
@@ -1447,7 +1460,46 @@ export default async function AdminPage({
                           >
                             {status}
                           </span>
-                          <div style={{ display: "flex", gap: 6 }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: 6,
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            {status === "encerrada" &&
+                              !draftedInscriptionIds.has(insc.id) && (
+                                <form
+                                  action={async () => {
+                                    "use server";
+                                    const matchId = await startDraft(insc.id);
+                                    redirect(`/admin/partidas/${matchId}`);
+                                  }}
+                                >
+                                  <button type="submit" style={btnSuccess}>
+                                    Iniciar Draft
+                                  </button>
+                                </form>
+                              )}
+                            {status === "encerrada" &&
+                              draftedInscriptionIds.has(insc.id) &&
+                              (() => {
+                                const m = allMatches.find(
+                                  (x) => x.inscriptionId === insc.id,
+                                );
+                                return m ? (
+                                  <a
+                                    href={`/admin/partidas/${m.id}`}
+                                    style={{
+                                      ...btnSuccess,
+                                      textDecoration: "none",
+                                      display: "inline-block",
+                                    }}
+                                  >
+                                    Ver Draft
+                                  </a>
+                                ) : null;
+                              })()}
                             <form
                               action={async () => {
                                 "use server";
@@ -1608,6 +1660,156 @@ export default async function AdminPage({
                           </div>
                         </details>
                       )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        )}
+        {/* ══ PARTIDAS ══════════════════════════════════════════════════════════ */}
+        {activeSection === "partidas" && (
+          <section>
+            <div style={{ marginBottom: 28 }}>
+              <h1
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: "var(--hull-100)",
+                  marginBottom: 4,
+                }}
+              >
+                Partidas
+              </h1>
+              <p style={{ fontSize: 12, color: "var(--hull-400)" }}>
+                Drafts iniciados a partir das inscrições
+              </p>
+            </div>
+            {allMatches.length === 0 ? (
+              <div
+                style={{
+                  padding: 48,
+                  textAlign: "center",
+                  color: "var(--hull-400)",
+                  fontSize: 13,
+                  background: "var(--void-100)",
+                  border: "1px solid var(--void-300)",
+                  borderRadius: 8,
+                }}
+              >
+                Nenhuma partida iniciada ainda. Encerre uma inscrição e clique
+                em &ldquo;Iniciar Draft&rdquo;.
+              </div>
+            ) : (
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: 12 }}
+              >
+                {allMatches.map((m) => {
+                  const insc = allInscriptions.find(
+                    (i) => i.id === m.inscriptionId,
+                  );
+                  type Lobby = {
+                    number: number;
+                    players: { discordId: string; displayName: string }[];
+                  };
+                  let lobbyList: Lobby[] = [];
+                  try {
+                    lobbyList = JSON.parse(m.lobbies);
+                  } catch {
+                    /* empty */
+                  }
+                  let suplList: { displayName: string }[] = [];
+                  try {
+                    suplList = JSON.parse(m.suplentes);
+                  } catch {
+                    /* empty */
+                  }
+                  const statusColor =
+                    m.status === "finished"
+                      ? "var(--signal-300)"
+                      : m.status === "active"
+                        ? "var(--crew-yellow)"
+                        : "var(--hull-300)";
+                  return (
+                    <div
+                      key={m.id}
+                      style={{
+                        background: "var(--void-100)",
+                        border: "1px solid var(--void-300)",
+                        borderRadius: 8,
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "14px 20px",
+                          gap: 12,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <div>
+                          <div
+                            style={{
+                              fontWeight: 700,
+                              fontSize: 14,
+                              color: "var(--hull-100)",
+                            }}
+                          >
+                            {insc?.title ?? `Partida #${m.id}`}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: 11,
+                              color: "var(--hull-400)",
+                              marginTop: 2,
+                            }}
+                          >
+                            {lobbyList.length} lobby
+                            {lobbyList.length !== 1 ? "s" : ""} ·{" "}
+                            {suplList.length} suplente
+                            {suplList.length !== 1 ? "s" : ""} ·{" "}
+                            {fmt(m.createdAt)}
+                          </div>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 10,
+                          }}
+                        >
+                          <span
+                            style={{
+                              display: "inline-block",
+                              padding: "3px 10px",
+                              borderRadius: 4,
+                              fontSize: 10,
+                              fontWeight: 700,
+                              letterSpacing: ".08em",
+                              textTransform: "uppercase",
+                              color: statusColor,
+                              background: `color-mix(in srgb, ${statusColor} 12%, transparent)`,
+                              border: `1px solid color-mix(in srgb, ${statusColor} 35%, transparent)`,
+                            }}
+                          >
+                            {m.status}
+                          </span>
+                          <a
+                            href={`/admin/partidas/${m.id}`}
+                            style={{
+                              ...btnSuccess,
+                              textDecoration: "none",
+                              display: "inline-block",
+                            }}
+                          >
+                            Gerenciar
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}

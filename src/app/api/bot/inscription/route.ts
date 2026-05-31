@@ -1,4 +1,4 @@
-import { and, eq, gt, isNotNull, isNull, lte, or } from "drizzle-orm";
+import { and, desc, eq, gt, isNotNull, isNull, lte, or } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import { db } from "@/db";
 import { inscriptions } from "@/db/schema";
@@ -22,13 +22,39 @@ function parseParticipants(raw: string) {
 /**
  * GET /api/bot/inscription
  *
- * Returns two lists:
- * - toPost: active inscriptions without a messageId (bot needs to post them)
- * - toClose: inscriptions with a messageId that have expired/disabled and no closedAt yet
+ * With ?channelId=xxx: returns the most recently closed inscription for that channel.
+ * Without query: returns two lists (toPost / toClose) for the scheduler.
  */
 export async function GET(request: NextRequest): Promise<Response> {
   if (!authenticate(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const channelId = request.nextUrl.searchParams.get("channelId");
+  if (channelId) {
+    const insc = await db
+      .select()
+      .from(inscriptions)
+      .where(
+        and(
+          eq(inscriptions.channelId, channelId),
+          isNotNull(inscriptions.closedAt),
+        ),
+      )
+      .orderBy(desc(inscriptions.closedAt))
+      .get();
+
+    if (!insc) {
+      return Response.json(
+        { error: "Nenhuma inscrição encerrada neste canal" },
+        { status: 404 },
+      );
+    }
+
+    return Response.json({
+      ...insc,
+      participants: parseParticipants(insc.participants),
+    });
   }
 
   const now = new Date();

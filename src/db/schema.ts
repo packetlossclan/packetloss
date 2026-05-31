@@ -123,7 +123,56 @@ export const inscriptions = sqliteTable("inscriptions", {
     .default(sql`(unixepoch() * 1000)`),
 });
 
+export const matches = sqliteTable("matches", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  inscriptionId: integer("inscription_id").references(() => inscriptions.id, {
+    onDelete: "cascade",
+  }),
+  /** JSON array of { number: 1, players: Participant[] } */
+  lobbies: text("lobbies").notNull().default("[]"),
+  /** JSON array of Participant */
+  suplentes: text("suplentes").notNull().default("[]"),
+  channelId: text("channel_id"),
+  messageId: text("message_id"),
+  status: text("status", { enum: ["draft", "active", "finished"] })
+    .notNull()
+    .default("draft"),
+  createdBy: integer("created_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+});
+
+export const lobbyResults = sqliteTable("lobby_results", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  matchId: integer("match_id")
+    .notNull()
+    .references(() => matches.id, { onDelete: "cascade" }),
+  lobbyNumber: integer("lobby_number").notNull(),
+  /** JSON array of { discordId, displayName, points, role, outcome } */
+  scores: text("scores").notNull().default("[]"),
+  status: text("status", { enum: ["pending", "submitted"] })
+    .notNull()
+    .default("pending"),
+  submittedBy: integer("submitted_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+});
+
 export type User = typeof users.$inferSelect;
 export type Ad = typeof ads.$inferSelect;
 export type Application = typeof applications.$inferSelect;
 export type Inscription = typeof inscriptions.$inferSelect;
+export type Match = typeof matches.$inferSelect;
+export type LobbyResult = typeof lobbyResults.$inferSelect;
