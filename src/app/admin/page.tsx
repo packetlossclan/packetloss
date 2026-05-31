@@ -180,6 +180,17 @@ export default async function AdminPage({
   }
 
   const now = new Date();
+  const brtParts = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const brtY = brtParts.find((p) => p.type === "year")?.value ?? "";
+  const brtM = brtParts.find((p) => p.type === "month")?.value ?? "";
+  const brtD = brtParts.find((p) => p.type === "day")?.value ?? "";
+  const defaultStartsAt = `${brtY}-${brtM}-${brtD}T20:30`;
+
   const activeInscriptionCount = allInscriptions.filter((i) => {
     const s = inscriptionStatus(i, now);
     return s === "ativa" || s === "pendente";
@@ -1300,6 +1311,7 @@ export default async function AdminPage({
                     <input
                       id="insc-channel"
                       name="channelId"
+                      defaultValue="1497735342005158040"
                       placeholder="Padrão: INSCRICAO_CHANNEL_ID"
                       style={inputStyle}
                     />
@@ -1317,29 +1329,17 @@ export default async function AdminPage({
                     />
                   </div>
                 </div>
-                <div className="admin-grid-2">
-                  <div style={fieldStyle}>
-                    <label style={labelStyle} htmlFor="insc-starts">
-                      Abertura (opcional)
-                    </label>
-                    <input
-                      id="insc-starts"
-                      name="startsAt"
-                      type="datetime-local"
-                      style={inputStyle}
-                    />
-                  </div>
-                  <div style={fieldStyle}>
-                    <label style={labelStyle} htmlFor="insc-expires">
-                      Encerramento (opcional)
-                    </label>
-                    <input
-                      id="insc-expires"
-                      name="expiresAt"
-                      type="datetime-local"
-                      style={inputStyle}
-                    />
-                  </div>
+                <div style={fieldStyle}>
+                  <label style={labelStyle} htmlFor="insc-starts">
+                    Abertura (opcional)
+                  </label>
+                  <input
+                    id="insc-starts"
+                    name="startsAt"
+                    type="datetime-local"
+                    defaultValue={defaultStartsAt}
+                    style={inputStyle}
+                  />
                 </div>
                 <button type="submit" style={btnPrimary}>
                   + Criar inscrição
