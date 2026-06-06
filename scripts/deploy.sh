@@ -22,7 +22,7 @@ if ! pnpm install --frozen-lockfile; then
 fi
 
 echo "🗃️ Sincronizando banco de dados..."
-if ! pnpm exec drizzle-kit push --force; then
+if ! pnpm run migrate; then
   echo "⚠️ Falha ao sincronizar banco de dados. Abortando o deploy..."
   exit 1
 fi

@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "NODE_ENV=production next start -p 3050",
     "push": "drizzle-kit push",
+    "migrate": "tsx scripts/migrate.ts",
     "seed": "tsx ./src/db/seed.ts",
     "lint": "biome check",
     "format": "biome format --write",
