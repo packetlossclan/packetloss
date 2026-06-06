@@ -12,15 +12,10 @@ import {
   lobbyResults,
 } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
-
-const MATCHES_PER_SEASON = 28;
-const INITIAL_OFFSET = 33; // próxima criada = 34 = T2P6
-
-export function rankedTitle(n: number): string {
-  const season = Math.ceil(n / MATCHES_PER_SEASON);
-  const match = ((n - 1) % MATCHES_PER_SEASON) + 1;
-  return `Rankeada #${match} Temporada: ${season}`;
-}
+import {
+  MATCHES_PER_SEASON,
+  INITIAL_OFFSET,
+} from "@/lib/ranked";
 
 async function nextRankedNumber(): Promise<number> {
   const row = await db

@@ -25,8 +25,8 @@ import {
   resetInscription,
   deleteInscription,
   startDraft,
-  rankedTitle,
 } from "./actions";
+import { rankedTitle } from "@/lib/ranked";
 import { ScheduleFields } from "./ScheduleFields";
 import { AdminSidebar } from "./AdminSidebar";
 
