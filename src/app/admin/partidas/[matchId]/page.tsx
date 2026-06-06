@@ -134,7 +134,13 @@ export default async function MatchPage({
         </a>
         <span style={{ color: "var(--void-400)" }}>/</span>
         <span style={{ fontSize: 13, color: "var(--hull-200)" }}>
-          {inscription?.title ?? `Partida #${matchId}`}
+          {inscription?.rankedNumber != null
+            ? (() => {
+                const s = Math.ceil(inscription.rankedNumber! / 28);
+                const m = ((inscription.rankedNumber! - 1) % 28) + 1;
+                return `Rankeada #${m} Temporada: ${s}`;
+              })()
+            : `Partida #${matchId}`}
         </span>
       </div>
 
@@ -149,7 +155,13 @@ export default async function MatchPage({
               marginBottom: 4,
             }}
           >
-            {inscription?.title ?? `Partida #${matchId}`}
+            {inscription?.rankedNumber != null
+              ? (() => {
+                  const s = Math.ceil(inscription.rankedNumber! / 28);
+                  const m = ((inscription.rankedNumber! - 1) % 28) + 1;
+                  return `Rankeada #${m} Temporada: ${s}`;
+                })()
+              : `Partida #${matchId}`}
           </h1>
           <p style={{ fontSize: 12, color: "var(--hull-400)" }}>
             {lobbyList.length} lobby{lobbyList.length !== 1 ? "s" : ""} ·{" "}

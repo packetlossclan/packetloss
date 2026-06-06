@@ -101,8 +101,10 @@ export const inscriptions = sqliteTable("inscriptions", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   /** Número sequencial global. Temporada = ceil(n/28), partida = ((n-1)%28)+1 */
   rankedNumber: integer("ranked_number"),
-  title: text("title").notNull(),
+  /** Temporada derivada do rankedNumber; armazenada para facilitar queries */
+  season: integer("season"),
   description: text("description"),
+  played: integer("played", { mode: "boolean" }).notNull().default(false),
   channelId: text("channel_id"),
   messageId: text("message_id"),
   /** JSON array of { discordId, displayName, joinedAt } */

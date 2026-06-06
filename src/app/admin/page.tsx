@@ -21,6 +21,7 @@ import {
   deleteApplication,
   createInscription,
   toggleInscription,
+  togglePlayed,
   resetInscription,
   deleteInscription,
   startDraft,
@@ -133,17 +134,26 @@ export default async function AdminPage({
 
   const isSuperAdmin = currentUser.role === "super_admin";
 
-  const [allUsers, allAds, allApplications, allInscriptions, allMatches, lastRanked] =
-    await Promise.all([
-      isSuperAdmin
-        ? db.select().from(users).orderBy(asc(users.createdAt))
-        : Promise.resolve([]),
-      db.select().from(ads).orderBy(asc(ads.createdAt)),
-      db.select().from(applications).orderBy(desc(applications.createdAt)),
-      db.select().from(inscriptions).orderBy(desc(inscriptions.createdAt)),
-      db.select().from(matches).orderBy(desc(matches.createdAt)),
-      db.select({ last: max(inscriptions.rankedNumber) }).from(inscriptions).get(),
-    ]);
+  const [
+    allUsers,
+    allAds,
+    allApplications,
+    allInscriptions,
+    allMatches,
+    lastRanked,
+  ] = await Promise.all([
+    isSuperAdmin
+      ? db.select().from(users).orderBy(asc(users.createdAt))
+      : Promise.resolve([]),
+    db.select().from(ads).orderBy(asc(ads.createdAt)),
+    db.select().from(applications).orderBy(desc(applications.createdAt)),
+    db.select().from(inscriptions).orderBy(desc(inscriptions.createdAt)),
+    db.select().from(matches).orderBy(desc(matches.createdAt)),
+    db
+      .select({ last: max(inscriptions.rankedNumber) })
+      .from(inscriptions)
+      .get(),
+  ]);
 
   const nextRankedNum = (lastRanked?.last ?? 33) + 1;
   const nextRankedTitlePreview = rankedTitle(nextRankedNum);
@@ -1286,10 +1296,25 @@ export default async function AdminPage({
               </div>
               <form action={createInscription}>
                 <div style={fieldStyle}>
-                  <div style={{ fontSize: 11, color: "var(--hull-400)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 4 }}>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: "var(--hull-400)",
+                      letterSpacing: ".06em",
+                      textTransform: "uppercase",
+                      marginBottom: 4,
+                    }}
+                  >
                     Próxima partida
                   </div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: "var(--signal-300)", fontFamily: "var(--font-display)" }}>
+                  <div
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 700,
+                      color: "var(--signal-300)",
+                      fontFamily: "var(--font-display)",
+                    }}
+                  >
                     {nextRankedTitlePreview}
                   </div>
                 </div>
@@ -1415,12 +1440,39 @@ export default async function AdminPage({
                         <div>
                           <div
                             style={{
-                              fontWeight: 700,
-                              fontSize: 14,
-                              color: "var(--hull-100)",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
                             }}
                           >
-                            {insc.title}
+                            <div
+                              style={{
+                                fontWeight: 700,
+                                fontSize: 14,
+                                color: "var(--hull-100)",
+                              }}
+                            >
+                              {insc.rankedNumber != null
+                                ? rankedTitle(insc.rankedNumber)
+                                : `Inscrição #${insc.id}`}
+                            </div>
+                            {insc.played && (
+                              <span
+                                style={{
+                                  fontSize: 10,
+                                  fontWeight: 700,
+                                  letterSpacing: ".06em",
+                                  textTransform: "uppercase",
+                                  color: "var(--signal-300)",
+                                  background: "rgba(0,229,199,0.1)",
+                                  border: "1px solid var(--signal-700)",
+                                  borderRadius: 3,
+                                  padding: "2px 6px",
+                                }}
+                              >
+                                Realizada
+                              </span>
+                            )}
                           </div>
                           <div
                             style={{
@@ -1501,6 +1553,21 @@ export default async function AdminPage({
                                   </a>
                                 ) : null;
                               })()}
+                            <form
+                              action={async () => {
+                                "use server";
+                                await togglePlayed(insc.id, !insc.played);
+                              }}
+                            >
+                              <button
+                                type="submit"
+                                style={insc.played ? btnSecondary : btnSuccess}
+                              >
+                                {insc.played
+                                  ? "Desmarcar realizada"
+                                  : "Marcar realizada"}
+                              </button>
+                            </form>
                             <form
                               action={async () => {
                                 "use server";
@@ -1760,7 +1827,9 @@ export default async function AdminPage({
                               color: "var(--hull-100)",
                             }}
                           >
-                            {insc?.title ?? `Partida #${m.id}`}
+                            {insc?.rankedNumber != null
+                              ? rankedTitle(insc.rankedNumber)
+                              : `Partida #${m.id}`}
                           </div>
                           <div
                             style={{

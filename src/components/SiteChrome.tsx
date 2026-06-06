@@ -343,6 +343,14 @@ export function SiteHeader({ active, accentColor, user }: SiteHeaderProps) {
             <a
               key={n.label}
               href={n.href}
+              target={
+                n.label.toLowerCase().includes("servidor")
+                  ? "_blank"
+                  : undefined
+              }
+              rel={
+                n.href.startsWith("http") ? "noopener noreferrer" : undefined
+              }
               style={{
                 padding: "8px 12px",
                 fontFamily: "var(--font-mono)",
@@ -357,6 +365,8 @@ export function SiteHeader({ active, accentColor, user }: SiteHeaderProps) {
               }}
             >
               {n.label}
+              {(n.label.toLowerCase().includes("servidor") ||
+                n.href.startsWith("http")) && <span>↗</span>}
             </a>
           ))}
         </nav>

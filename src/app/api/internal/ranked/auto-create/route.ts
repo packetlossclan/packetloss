@@ -2,10 +2,9 @@ import { and, gte, lt, max } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import { db } from "@/db";
 import { inscriptions } from "@/db/schema";
-import { rankedTitle } from "@/app/admin/actions";
-
 const DEFAULT_CHANNEL_ID = "1497735342005158040";
 const INITIAL_OFFSET = 33;
+const MATCHES_PER_SEASON = 28;
 
 function authenticate(request: NextRequest): boolean {
   const token = process.env.INTERNAL_API_TOKEN;
@@ -50,7 +49,11 @@ export async function POST(request: NextRequest): Promise<Response> {
     .get();
 
   if (existing) {
-    return Response.json({ created: false, reason: "already_exists", id: existing.id });
+    return Response.json({
+      created: false,
+      reason: "already_exists",
+      id: existing.id,
+    });
   }
 
   // startsAt: 20:30 BRT = 23:30 UTC
@@ -66,12 +69,17 @@ export async function POST(request: NextRequest): Promise<Response> {
     .insert(inscriptions)
     .values({
       rankedNumber: n,
-      title: rankedTitle(n),
+      season: Math.ceil(n / MATCHES_PER_SEASON),
       channelId: DEFAULT_CHANNEL_ID,
       startsAt,
       enabled: true,
     })
     .returning();
 
-  return Response.json({ created: true, id: created.id, title: created.title });
+  return Response.json({
+    created: true,
+    id: created.id,
+    rankedNumber: created.rankedNumber,
+    season: created.season,
+  });
 }

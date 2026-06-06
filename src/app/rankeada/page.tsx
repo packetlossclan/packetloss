@@ -4,6 +4,13 @@ import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { db } from "@/db";
 import { inscriptions, type Inscription } from "@/db/schema";
 
+function inscriptionTitle(insc: Inscription): string {
+  if (insc.rankedNumber == null) return `Inscrição #${insc.id}`;
+  const season = Math.ceil(insc.rankedNumber / 28);
+  const match = ((insc.rankedNumber - 1) % 28) + 1;
+  return `Rankeada #${match} Temporada: ${season}`;
+}
+
 function fmtBRT(d: Date | null | undefined) {
   if (!d) return "—";
   return new Date(d).toLocaleString("pt-BR", {
@@ -198,7 +205,7 @@ export default async function RankeadaPage() {
                                 marginBottom: 4,
                               }}
                             >
-                              {insc.title}
+                              {inscriptionTitle(insc)}
                             </h2>
                             {insc.description && (
                               <p
@@ -447,7 +454,7 @@ export default async function RankeadaPage() {
                             color: "var(--hull-200)",
                           }}
                         >
-                          {insc.title}
+                          {inscriptionTitle(insc)}
                         </div>
                         <div
                           style={{

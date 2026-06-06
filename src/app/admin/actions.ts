@@ -245,7 +245,7 @@ export async function createInscription(formData: FormData) {
 
   await db.insert(inscriptions).values({
     rankedNumber: n,
-    title: rankedTitle(n),
+    season: Math.ceil(n / MATCHES_PER_SEASON),
     description,
     channelId,
     maxParticipants:
@@ -286,6 +286,16 @@ export async function resetInscription(id: number) {
 export async function deleteInscription(id: number) {
   await requireAdmin();
   await db.delete(inscriptions).where(eq(inscriptions.id, id));
+  revalidatePath("/admin");
+  revalidatePath("/rankeada");
+}
+
+export async function togglePlayed(id: number, played: boolean) {
+  await requireAdmin();
+  await db
+    .update(inscriptions)
+    .set({ played, updatedAt: new Date() })
+    .where(eq(inscriptions.id, id));
   revalidatePath("/admin");
   revalidatePath("/rankeada");
 }
