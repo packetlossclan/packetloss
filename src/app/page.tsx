@@ -1,9 +1,11 @@
 import { getCurrentUser } from "@/lib/auth";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { HeroCommand } from "@/components/Hero";
+import { getBuildId } from "@/lib/build";
 
 export default async function Home() {
   const user = await getCurrentUser();
+  const buildId = getBuildId();
 
   return (
     <>
@@ -13,7 +15,7 @@ export default async function Home() {
         <HeroCommand user={user} />
       </main>
 
-      <SiteFooter />
+      <SiteFooter buildId={buildId} />
     </>
   );
 }

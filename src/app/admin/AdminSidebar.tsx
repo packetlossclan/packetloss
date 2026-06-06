@@ -13,6 +13,7 @@ interface AdminSidebarProps {
   navItems: NavItem[];
   roleLabel: string;
   currentUser: { username: string; role: string };
+  buildId?: string;
 }
 
 export function AdminSidebar({
@@ -20,6 +21,7 @@ export function AdminSidebar({
   navItems,
   roleLabel,
   currentUser,
+  buildId,
 }: AdminSidebarProps) {
   const [open, setOpen] = useState(false);
 
@@ -164,6 +166,20 @@ export function AdminSidebar({
             Sair
           </button>
         </form>
+        {buildId && (
+          <div
+            style={{
+              marginTop: 10,
+              fontSize: 9,
+              color: "var(--hull-400)",
+              letterSpacing: ".06em",
+              textAlign: "center",
+              opacity: 0.6,
+            }}
+          >
+            build {buildId}
+          </div>
+        )}
       </div>
     </>
   );

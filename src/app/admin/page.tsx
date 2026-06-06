@@ -27,6 +27,7 @@ import {
   startDraft,
 } from "./actions";
 import { rankedTitle } from "@/lib/ranked";
+import { getBuildId } from "@/lib/build";
 import { ScheduleFields } from "./ScheduleFields";
 import { AdminSidebar } from "./AdminSidebar";
 
@@ -155,6 +156,7 @@ export default async function AdminPage({
       .get(),
   ]);
 
+  const buildId = getBuildId();
   const nextRankedNum = (lastRanked?.last ?? 33) + 1;
   const nextRankedTitlePreview = rankedTitle(nextRankedNum);
 
@@ -341,6 +343,7 @@ export default async function AdminPage({
         navItems={navItems}
         roleLabel={ROLE_LABELS[currentUser.role]}
         currentUser={{ username: currentUser.username, role: currentUser.role }}
+        buildId={buildId}
       />
 
       {/* ─── Main ───────────────────────────────────────────────────────────── */}

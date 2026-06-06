@@ -12,10 +12,7 @@ import {
   lobbyResults,
 } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
-import {
-  MATCHES_PER_SEASON,
-  INITIAL_OFFSET,
-} from "@/lib/ranked";
+import { MATCHES_PER_SEASON, INITIAL_OFFSET } from "@/lib/ranked";
 
 async function nextRankedNumber(): Promise<number> {
   const row = await db

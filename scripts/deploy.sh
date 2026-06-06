@@ -8,15 +8,6 @@ PATH=/home/nginx/.local/share/pnpm:$PATH
 
 echo "📦 Preparando ambiente de deploy..."
 
-echo "🔍 pnpm $(pnpm --version 2>/dev/null || echo 'não encontrado')"
-PNPM_MAJOR=$(pnpm --version 2>/dev/null | cut -d. -f1)
-if [ "${PNPM_MAJOR:-0}" -lt 11 ]; then
-  echo "🔄 Atualizando pnpm para v11..."
-  curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=11 PNPM_HOME=/home/nginx/.local/share/pnpm sh -
-  hash -r 2>/dev/null || true
-  echo "🔍 pnpm atualizado para $(pnpm --version 2>/dev/null)"
-fi
-
 [ -e $TMPDIR ] && rm -rf $TMPDIR
 [ -e $WORKDIR ] && cp -af $WORKDIR $TMPDIR
 cd $TMPDIR || exit 1
@@ -49,7 +40,8 @@ if pnpm run build; then
   sudo /usr/sbin/restorecon -R /var/www/$NAME 2> /dev/null
   # Allow Nginx to proxy to local ports (e.g. 3050)
   sudo /usr/sbin/setsebool -P httpd_can_network_connect 1
-  sudo /usr/bin/chcon -t bin_t /home/nginx/.local/share/pnpm/pnpm
+  #sudo /usr/sbin/restorecon -Rv /home/nginx/.local/share/pnpm/
+  sudo /usr/bin/chcon -t bin_t /home/nginx/.local/share/pnpm/bin/pnpm
 
   sudo /usr/bin/systemctl start $SERVICE
   echo "🚀 Serviço reiniciado!"

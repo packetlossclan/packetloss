@@ -589,9 +589,10 @@ export function SiteHeader({ active, accentColor, user }: SiteHeaderProps) {
 
 interface SiteFooterProps {
   accentColor?: string;
+  buildId?: string;
 }
 
-export function SiteFooter({ accentColor }: SiteFooterProps) {
+export function SiteFooter({ accentColor, buildId }: SiteFooterProps) {
   const accent = accentColor ?? "var(--signal-500)";
 
   return (
@@ -662,9 +663,25 @@ export function SiteFooter({ accentColor }: SiteFooterProps) {
 
         <div
           className="mono"
-          style={{ color: "var(--hull-400)", fontSize: 11 }}
+          style={{
+            color: "var(--hull-400)",
+            fontSize: 11,
+            display: "flex",
+            gap: 12,
+            alignItems: "center",
+          }}
         >
-          © 2026 Packet Loss.
+          <span>© 2026 Packet Loss.</span>
+          {buildId && (
+            <span
+              style={{
+                color: "var(--hull-600, var(--hull-400))",
+                opacity: 0.6,
+              }}
+            >
+              build {buildId}
+            </span>
+          )}
         </div>
       </div>
     </footer>
