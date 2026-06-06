@@ -22,7 +22,7 @@ if ! pnpm install --frozen-lockfile; then
 fi
 
 echo "🗃️ Sincronizando banco de dados..."
-if ! pnpm run push; then
+if ! pnpm run push -- --force; then
   echo "⚠️ Falha ao sincronizar banco de dados. Abortando o deploy..."
   exit 1
 fi
