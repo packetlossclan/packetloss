@@ -104,31 +104,7 @@ export default async function NotFound() {
           movido ou você digitou o endereço errado.
         </p>
 
-        <a
-          href="/"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "12px 28px",
-            background: "var(--signal-500)",
-            color: "var(--void-000)",
-            fontFamily: "var(--font-mono)",
-            fontSize: "var(--type-small)",
-            fontWeight: 600,
-            letterSpacing: "var(--tracking-button)",
-            textTransform: "uppercase",
-            textDecoration: "none",
-            borderRadius: "var(--r-md)",
-            transition: "opacity 0.15s",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.opacity = "0.85";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.opacity = "1";
-          }}
-        >
+        <a href="/" className="btn btn--primary">
           ← Voltar ao início
         </a>
       </main>
