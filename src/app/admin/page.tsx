@@ -26,7 +26,7 @@ import {
   deleteInscription,
   startDraft,
 } from "./actions";
-import { rankedTitle } from "@/lib/ranked";
+import { MATCHES_PER_SEASON, rankedTitle } from "@/lib/ranked";
 import { getBuildId } from "@/lib/build";
 import { ScheduleFields } from "./ScheduleFields";
 import { AdminSidebar } from "./AdminSidebar";
@@ -159,6 +159,8 @@ export default async function AdminPage({
   const buildId = getBuildId();
   const nextRankedNum = (lastRanked?.last ?? 33) + 1;
   const nextRankedTitlePreview = rankedTitle(nextRankedNum);
+  const nextSeason = Math.ceil(nextRankedNum / MATCHES_PER_SEASON);
+  const nextMatchInSeason = ((nextRankedNum - 1) % MATCHES_PER_SEASON) + 1;
 
   const draftedInscriptionIds = new Set(
     allMatches.map((m) => m.inscriptionId).filter(Boolean),
@@ -1332,28 +1334,43 @@ export default async function AdminPage({
                     placeholder="Texto exibido na mensagem do Discord"
                   />
                 </div>
+                <div style={fieldStyle}>
+                  <label style={labelStyle} htmlFor="insc-channel">
+                    Canal do Discord (ID)
+                  </label>
+                  <input
+                    id="insc-channel"
+                    name="channelId"
+                    defaultValue="1497735342005158040"
+                    placeholder="Padrão: INSCRICAO_CHANNEL_ID"
+                    style={inputStyle}
+                  />
+                </div>
                 <div className="admin-grid-2">
                   <div style={fieldStyle}>
-                    <label style={labelStyle} htmlFor="insc-channel">
-                      Canal do Discord (ID)
+                    <label style={labelStyle} htmlFor="insc-season">
+                      Temporada
                     </label>
                     <input
-                      id="insc-channel"
-                      name="channelId"
-                      defaultValue="1497735342005158040"
-                      placeholder="Padrão: INSCRICAO_CHANNEL_ID"
+                      id="insc-season"
+                      name="season"
+                      type="number"
+                      min="1"
+                      defaultValue={nextSeason}
                       style={inputStyle}
                     />
                   </div>
                   <div style={fieldStyle}>
-                    <label style={labelStyle} htmlFor="insc-max">
-                      Máximo de participantes (opcional)
+                    <label style={labelStyle} htmlFor="insc-match">
+                      Partida (1–{MATCHES_PER_SEASON})
                     </label>
                     <input
-                      id="insc-max"
-                      name="maxParticipants"
+                      id="insc-match"
+                      name="match"
                       type="number"
                       min="1"
+                      max={MATCHES_PER_SEASON}
+                      defaultValue={nextMatchInSeason}
                       style={inputStyle}
                     />
                   </div>

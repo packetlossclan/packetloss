@@ -222,10 +222,6 @@ export async function createInscription(formData: FormData) {
 
   const description = String(formData.get("description") ?? "").trim() || null;
   const channelId = String(formData.get("channelId") ?? "").trim() || null;
-  const maxParticipantsRaw = formData.get("maxParticipants");
-  const maxParticipants = maxParticipantsRaw
-    ? Number(maxParticipantsRaw)
-    : null;
 
   // Parse startsAt as Brasília time (BRT = UTC-3)
   const startsAtRaw = formData.get("startsAt");
@@ -233,15 +229,21 @@ export async function createInscription(formData: FormData) {
     ? new Date(`${String(startsAtRaw)}:00-03:00`)
     : null;
 
-  const n = await nextRankedNumber();
+  const seasonRaw = formData.get("season");
+  const matchRaw = formData.get("match");
+  const season = seasonRaw ? Number(seasonRaw) : null;
+  const match = matchRaw ? Number(matchRaw) : null;
+
+  const n =
+    season && match && season > 0 && match >= 1 && match <= MATCHES_PER_SEASON
+      ? (season - 1) * MATCHES_PER_SEASON + match
+      : await nextRankedNumber();
 
   await db.insert(inscriptions).values({
     rankedNumber: n,
     season: Math.ceil(n / MATCHES_PER_SEASON),
     description,
     channelId,
-    maxParticipants:
-      maxParticipants && maxParticipants > 0 ? maxParticipants : null,
     startsAt,
     createdBy: actor.id,
   });

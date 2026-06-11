@@ -116,4 +116,29 @@ import { createClient } from "@libsql/client";
       }
     }
   }
+
+  // ALTER TABLE DROP COLUMN — idempotent via no-such-column catch
+  const drops: { sql: string; label: string }[] = [
+    // inscriptions.title — leftover NOT NULL column from the old schema,
+    // no longer set by inserts and causes SQLITE_CONSTRAINT_NOTNULL
+    {
+      sql: "ALTER TABLE inscriptions DROP COLUMN title",
+      label: "inscriptions.title",
+    },
+  ];
+
+  for (const { sql, label } of drops) {
+    try {
+      await db.execute(sql);
+      console.log(`✓ dropped ${label}`);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg.includes("no such column")) {
+        console.log(`– ${label} already absent, skipping`);
+      } else {
+        console.error(`✗ drop ${label}: ${msg}`);
+        process.exit(1);
+      }
+    }
+  }
 })();
