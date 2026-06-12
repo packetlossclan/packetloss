@@ -1,7 +1,25 @@
 import { and, desc, eq, gt, isNotNull, isNull, lte, or } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import { db } from "@/db";
-import { inscriptions } from "@/db/schema";
+import { inscriptions, type Inscription } from "@/db/schema";
+import { rankedTitle } from "@/lib/ranked";
+
+function inscriptionTitle(insc: Inscription): string {
+  if (insc.rankedNumber == null) return `🏆 Inscrição #${insc.id}`;
+
+  const date = insc.expiresAt
+    ? ` — ${new Date(insc.expiresAt).toLocaleString("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`
+    : "";
+
+  return `🏆 ${rankedTitle(insc.rankedNumber)}${date}`;
+}
 
 function authenticate(request: NextRequest): boolean {
   const apiKey = process.env.PACKETADS_API_KEY;
@@ -53,6 +71,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 
     return Response.json({
       ...insc,
+      title: inscriptionTitle(insc),
       participants: parseParticipants(insc.participants),
     });
   }
@@ -92,10 +111,12 @@ export async function GET(request: NextRequest): Promise<Response> {
   return Response.json({
     toPost: toPost.map((i) => ({
       ...i,
+      title: inscriptionTitle(i),
       participants: parseParticipants(i.participants),
     })),
     toClose: toClose.map((i) => ({
       ...i,
+      title: inscriptionTitle(i),
       participants: parseParticipants(i.participants),
     })),
   });
